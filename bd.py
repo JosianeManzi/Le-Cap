@@ -7,10 +7,10 @@ import os
 @contextlib.contextmanager
 def creer_connexion():
     conn = mysql.connector.connect(
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        database=os.getenv("DB_NAME"),
+        user=os.getenv("BD_UTILISATEUR"),
+        password=os.getenv("BD_MDP"),
+        host=os.getenv("BD_SERVEUR"),
+        database=os.getenv("BD_NOM_SCHEMA"),
         raise_on_warnings=True
     )
 
@@ -54,3 +54,12 @@ def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom):
             INSERT INTO utilisateurs (email, mot_de_passe, nom, prenom, est_admin)
             VALUES (%s, %s, %s, %s, 0)
         """, (courriel, mot_de_passe, nom, prenom))
+
+def chercher_utilisateur(conn, courriel, mot_de_passe_hache):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT * FROM utilisateurs WHERE email = %s AND mot_de_passe = %s",
+            (courriel, mot_de_passe_hache)
+        )
+        utilisateur = curseur.fetchone()
+        return utilisateur

@@ -69,7 +69,7 @@ def connexion():
         return redirect(url_for("compte.page_connexion"))
 
     session["id_utilisateur"] = utilisateur["id"]
-
+    session["nom"] = utilisateur["nom"]
     flash("Connexion réussie.")
     return redirect(url_for("compte.page_utilisateur", utilisateur=utilisateur))
 
@@ -78,3 +78,4 @@ def connexion():
 @bp_compte.route("comptes/utilisateur")
 def page_utilisateur():
     return render_template("comptes/utilisateur.jinja")
+
