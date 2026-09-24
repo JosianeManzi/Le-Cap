@@ -148,6 +148,7 @@ async function creerCompte(e) {
     }
 }
 
+
 function initialiserValidation() {
     document.getElementById("nom").addEventListener("input", validerNom);
     document.getElementById("prenom") .addEventListener("input", validerPrenom);

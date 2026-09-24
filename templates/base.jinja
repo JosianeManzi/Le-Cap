@@ -32,11 +32,15 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" href="#"> Nous joindre</a>
                     </li>
-
+                    {% if session.get('id_utilisateur') %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="#"> Connexion</a>
+                        <a class="nav-link text-dark" href="{{ url_for('compte.page_connexion') }}"> Deconnexion</a>
                     </li>
-
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url_for('compte.page_connexion') }}"> Connexion</a>
+                    </li>
+                    {% endif %}
                 </ul>
 
                 <a href="#" class="btn btn-dark rounded-0 px-4 py-3">Réserver maintenant </a>
@@ -44,12 +48,10 @@
         </div>
     </nav>
 
-
     <main>
         {% block contenu %}
         {% endblock %}
     </main>
-
 
     <footer class="bg-white border-top mt-auto">
         <div class="container py-2">
