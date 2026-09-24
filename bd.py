@@ -38,7 +38,7 @@ def get_curseur(self):
 def utilisateur_existe(conn, courriel):
     with conn.get_curseur() as curseur:
         curseur.execute(
-            "SELECT id_utilisateur FROM utilisateurs WHERE courriel = %s",
+            "SELECT id FROM utilisateurs WHERE email = %s",
             (courriel,)
         )
         resultat = curseur.fetchone()
@@ -51,6 +51,6 @@ def utilisateur_existe(conn, courriel):
 def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom):
     with conn.get_curseur() as curseur:
         curseur.execute("""
-            INSERT INTO utilisateurs (courriel, mot_de_passe, nom, prenom, est_admin, credit)
-            VALUES (%s, %s, %s, %s, 0, 0)
+            INSERT INTO utilisateurs (email, mot_de_passe, nom, prenom, est_admin)
+            VALUES (%s, %s, %s, %s, 0)
         """, (courriel, mot_de_passe, nom, prenom))
