@@ -24,7 +24,7 @@ def verifier_courriel():
         existe = bd.utilisateur_existe(conn, courriel)
     return jsonify({"existe": existe})
 
-@bp_compte.route("/api/creer_compte", methods=["POST"])
+@bp_compte.route("/creer_compte", methods=["POST"])
 def creer_compte():
 
     courriel = request.form.get("courriel", "").strip()

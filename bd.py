@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-"""
-Accès à la base de données
-"""
-
-=======
 import types
->>>>>>> aec3e9399fad3d3ff947600f9f52db4c961595fe
 import contextlib
 import mysql.connector
 import os
 
 
-<<<<<<< HEAD
-# connexion a la base de donnée
-@contextlib.contextmanager
-def _creer_connexion():
-    """Créer une connexion à la BD"""
-    conn = mysql.connector.connect(
-        user=os.getenv("BD_UTILISATEUR"),
-        password=os.getenv("BD_MDP"),
-        host=os.getenv("BD_SERVEUR"),
-        database=os.getenv("BD_NOM_SCHEMA"),
-        raise_on_warnings=True
-    )
-
-=======
 @contextlib.contextmanager
 def creer_connexion():
     conn = mysql.connector.connect(
@@ -37,7 +16,6 @@ def creer_connexion():
 
     conn.get_curseur = types.MethodType(get_curseur, conn)
 
->>>>>>> aec3e9399fad3d3ff947600f9f52db4c961595fe
     try:
         yield conn
     except Exception:
@@ -49,9 +27,6 @@ def creer_connexion():
         conn.close()
 
 
-<<<<<<< HEAD
-@contextlib.contextmanager
-=======
 @contextlib.contextmanager
 def get_curseur(self):
     curseur = self.cursor(dictionary=True)
@@ -79,4 +54,3 @@ def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom):
             INSERT INTO utilisateurs (email, mot_de_passe, nom, prenom, est_admin)
             VALUES (%s, %s, %s, %s, 0)
         """, (courriel, mot_de_passe, nom, prenom))
->>>>>>> aec3e9399fad3d3ff947600f9f52db4c961595fe
