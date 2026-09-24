@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hotel Le Cap{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <a href="{{ url_for('accueil') }}">Hotel Le&nbsp;Cap</a>
+        </div>
+        <nav>
+            <a href="{{ url_for('accueil') }}">Accueil</a>
+            <a href="{{ url_for('chambres') }}">Chambres</a>
+            <a href="{{ url_for('a_propos') }}">A propos</a>
+            <a href="{{ url_for('contact') }}">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Hotel Le Cap. Tous droits reserves.</p>
+    </footer>
+
+</body>
+</html>
