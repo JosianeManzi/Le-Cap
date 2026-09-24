@@ -63,7 +63,7 @@ async function verifierCourrielExiste() {
 
     try {
         const resultat = await envoyerRequeteAjax(
-            "/compte/api/verifier_courriel",
+            "/compte/verifier_courriel",
             "POST",
             { courriel: courriel }
         );
@@ -134,7 +134,7 @@ async function creerCompte(e) {
 
     try {
         const resultat = await envoyerRequeteAjax(
-            "/compte/api/creer_compte",
+            "/compte/creer_compte",
             "POST",
             parametres
         );
