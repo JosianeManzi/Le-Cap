@@ -17,14 +17,14 @@ def hacher_mdp(mdp):
     """hacher mdp"""
     return hashlib.sha512(mdp.encode('utf-8')).hexdigest()
 
-@bp_compte.route("/api/verifier_courriel", methods=["POST"])
+@bp_compte.route("/verifier_courriel", methods=["POST"])
 def verifier_courriel():
     courriel = request.form.get("courriel", "").strip()
     with bd.creer_connexion() as conn:
         existe = bd.utilisateur_existe(conn, courriel)
     return jsonify({"existe": existe})
 
-@bp_compte.route("/api/creer_compte", methods=["POST"])
+@bp_compte.route("/creer_compte", methods=["POST"])
 def creer_compte():
 
     courriel = request.form.get("courriel", "").strip()
