@@ -69,3 +69,11 @@ def obtenir_chambres(conn):
     with conn.get_curseur() as curseur:
         curseur.execute("SELECT * FROM chambres")
         return curseur.fetchall()
+def chercher_utilisateur(conn, courriel, mot_de_passe_hache):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT * FROM utilisateurs WHERE email = %s AND mot_de_passe = %s",
+            (courriel, mot_de_passe_hache)
+        )
+        utilisateur = curseur.fetchone()
+        return utilisateur
