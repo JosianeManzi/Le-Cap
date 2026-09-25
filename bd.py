@@ -54,3 +54,18 @@ def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom):
             INSERT INTO utilisateurs (email, mot_de_passe, nom, prenom, est_admin)
             VALUES (%s, %s, %s, %s, 0)
         """, (courriel, mot_de_passe, nom, prenom))
+
+def ajouter_chambre(conn, type_chambre, description, prix_nuit, image, disponible=1):
+    """Ajoute une nouvelle chambre dans la BD"""
+    with conn.get_curseur() as curseur:
+        curseur.execute("""
+            INSERT INTO chambres (type_chambre, description, prix_nuit, image, disponible)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (type_chambre, description, prix_nuit, image, disponible))
+
+
+def obtenir_chambres(conn):
+    """Retourne la liste de toutes les chambres"""
+    with conn.get_curseur() as curseur:
+        curseur.execute("SELECT * FROM chambres")
+        return curseur.fetchall()

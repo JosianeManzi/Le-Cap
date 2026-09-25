@@ -1,0 +1,37 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Nos chambres - Le-Cap{% endblock %}
+
+{% block contenu %}
+<div class="container py-4">
+    <h1 class="fw-bold mb-4 text-center">Nos chambres</h1>
+
+    <div class="row g-4">
+        {% for chambre in chambres %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card border-0 shadow-lg rounded-4 h-100">
+                {% if chambre.image %}
+                <img src="{{ url_for('static', filename='img/' + chambre.image) }}" class="card-img-top rounded-top-4" alt="{{ chambre.type_chambre }}">
+                {% endif %}
+                <div class="card-body p-4">
+                    <h3 class="fw-bold">{{ chambre.type_chambre }}</h3>
+                    <p class="text-muted">{{ chambre.description }}</p>
+                    <p class="fw-semibold fs-5">{{ chambre.prix_nuit }} $ / nuit</p>
+
+                    {% if chambre.disponible %}
+                        <span class="badge bg-success">Disponible</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Indisponible</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center">Aucune chambre disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Ajouter une chambre - Le-Cap{% endblock %}
+
+{% block contenu %}
+<div class="page-ajouter-chambre container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h1 class="fw-bold mb-2">Ajouter une chambre</h1>
+                    </div>
+
+                    <form id="form-ajouter-chambre">
+                        <div class="mb-3">
+                            <label for="type_chambre" class="form-label fw-semibold">Type de chambre</label>
+                            <input type="text" class="form-control form-control-lg" id="type_chambre" name="type_chambre" placeholder="Simple, Double, Suite...">
+                            <div id="erreur-type" class="text-danger small"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-semibold">Description</label>
+                            <textarea class="form-control form-control-lg" id="description" name="description" rows="3"></textarea>
+                            <div id="erreur-description" class="text-danger small"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prix_nuit" class="form-label fw-semibold">Prix par nuit ($)</label>
+                            <input type="number" step="0.01" class="form-control form-control-lg" id="prix_nuit" name="prix_nuit">
+                            <div id="erreur-prix" class="text-danger small"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label fw-semibold">Nom du fichier image</label>
+                            <input type="text" class="form-control form-control-lg" id="image" name="image" placeholder="ex: suite.jpg">
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="disponible" name="disponible" value="1" checked>
+                            <label for="disponible" class="form-check-label">Disponible</label>
+                        </div>
+
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3" style="width: 200px;">
+                                Ajouter la chambre
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script defer="defer" src="/static/js/utils-ajax.js"></script>
+<script defer="defer" src="/static/js/ajouter_chambre.js"></script>
+{% endblock %}
