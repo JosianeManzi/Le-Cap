@@ -1,12 +1,14 @@
-from flask import Flask
+from flask import Flask,render_template
+from dotenv import load_dotenv
+import os
 from routes_compte import bp_compte
-import os, dotenv
-if not os.getenv('BD_UTILISATEUR'):
-    dotenv.load_dotenv('.env')
 
 
+if not os.getenv("DB_USER"):
+    load_dotenv(".env")
 
 app = Flask(__name__)
+app.secret_key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 app.register_blueprint(bp_compte, url_prefix="/compte")
 
 if __name__ == "__main__":
