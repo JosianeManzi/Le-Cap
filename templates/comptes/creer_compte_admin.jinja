@@ -1,0 +1,59 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Créer un compte administrateur - Le-Cap{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h1 class="fw-bold mb-2">Créer un compte administrateur</h1>
+                        <p class="text-muted">Accès réservé à l'équipe de gestion du Le-Cap</p>
+                    </div>
+
+                    <form id="form-creer-compte-admin">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nom" class="form-label fw-semibold">Nom</label>
+                                <input type="text" class="form-control form-control-lg" id="nom" name="nom">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="prenom" class="form-label fw-semibold">Prénom</label>
+                                <input type="text" class="form-control form-control-lg" id="prenom" name="prenom">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="courriel" class="form-label fw-semibold">Courriel</label>
+                            <input class="form-control form-control-lg" id="courriel" name="courriel">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="mot_de_passe" class="form-label fw-semibold">Mot de passe</label>
+                            <input type="password" class="form-control form-control-lg" id="mot_de_passe" name="mot_de_passe">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="code_secret" class="form-label fw-semibold">Code secret administrateur</label>
+                            <input type="password" class="form-control form-control-lg" id="code_secret" name="code_secret">
+                        </div>
+
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3" style="width: 220px;">
+                                Créer le compte admin
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script defer="defer" src="/static/js/utils-ajax.js"></script>
+<script defer="defer" src="/static/js/compte.js"></script>
+{% endblock %}

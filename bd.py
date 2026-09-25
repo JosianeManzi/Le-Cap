@@ -6,6 +6,7 @@ import os
 
 @contextlib.contextmanager
 def creer_connexion():
+    """Créer une connexion à la BD"""
     conn = mysql.connector.connect(
         user=os.getenv("BD_UTILISATEUR"),
         password=os.getenv("BD_MDP"),
@@ -35,22 +36,32 @@ def get_curseur(self):
     finally:
         curseur.close()
 
+
 def utilisateur_existe(conn, courriel):
+    """Retourne True si un utilisateur avec ce courriel existe déjà"""
     with conn.get_curseur() as curseur:
         curseur.execute(
             "SELECT id FROM utilisateurs WHERE email = %s",
             (courriel,)
         )
         resultat = curseur.fetchone()
+        return resultat is not None
 
-        if resultat:
-            return True
-        else:
-            return False
 
-def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom):
+def obtenir_utilisateur_par_email(conn, courriel):
+    """Retourne l'utilisateur correspondant à ce courriel (dict), ou None"""
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT * FROM utilisateurs WHERE email = %s",
+            (courriel,)
+        )
+        return curseur.fetchone()
+
+
+def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom, est_admin=0):
+    """Ajoute un nouvel utilisateur (client par défaut, admin si est_admin=1)"""
     with conn.get_curseur() as curseur:
         curseur.execute("""
             INSERT INTO utilisateurs (email, mot_de_passe, nom, prenom, est_admin)
-            VALUES (%s, %s, %s, %s, 0)
-        """, (courriel, mot_de_passe, nom, prenom))
+            VALUES (%s, %s, %s, %s, %s)
+        """, (courriel, mot_de_passe, nom, prenom, est_admin))
