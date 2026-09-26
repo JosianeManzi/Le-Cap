@@ -59,13 +59,12 @@ def obtenir_utilisateur_par_email(conn, courriel):
 
 
 def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom, est_admin=0):
-    """Ajoute un nouvel utilisateur (client par défaut, admin si est_admin=1)"""
     with conn.get_curseur() as curseur:
         curseur.execute("""
             INSERT INTO utilisateurs (email, mot_de_passe, nom, prenom, est_admin)
-            VALUES (%s, %s, %s, %s, 0)
-        """, (courriel, mot_de_passe, nom, prenom))
-
+            VALUES (%s, %s, %s, %s, %s)
+        """, (courriel, mot_de_passe, nom, prenom, est_admin))
+        
 def chercher_utilisateur(conn, courriel, mot_de_passe_hache):
     with conn.get_curseur() as curseur:
         curseur.execute(
