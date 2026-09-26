@@ -63,3 +63,10 @@ def chercher_utilisateur(conn, courriel, mot_de_passe_hache):
         )
         utilisateur = curseur.fetchone()
         return utilisateur
+def obtenir_utilisateur(conn, id_utilisateur):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT * FROM utilisateurs WHERE id = %s",
+            (id_utilisateur,)
+        )
+        return curseur.fetchone()

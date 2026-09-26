@@ -1,10 +1,17 @@
-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
+html, body {
+  height: 100%;
 }
-.page-inscription {
-    padding: 30px 15px 160px 15px;
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding: 40px 0;
+}
+
+footer {
+  width: 100%;
 }
