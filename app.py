@@ -11,5 +11,10 @@ app = Flask(__name__)
 app.secret_key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 app.register_blueprint(bp_compte, url_prefix="/compte")
 
+@app.route("/")
+def accueil():
+    return render_template("index.jinja")
+
 if __name__ == "__main__":
     app.run(debug=True)
+
