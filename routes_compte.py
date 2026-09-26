@@ -92,3 +92,8 @@ def connexion():
     session["nom"] = utilisateur["nom"]
 
     return jsonify({"succes": True, "message": f"Bienvenue {utilisateur['prenom']} !"}), 200
+
+
+@bp_compte.route("/apercu-admin", methods=["GET"])
+def apercu_admin():
+    return render_template("admin/tableau_bord.jinja")
