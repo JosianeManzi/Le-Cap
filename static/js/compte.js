@@ -138,9 +138,7 @@ async function creerCompte(e) {
             "POST",
             parametres
         );
-        alert(resultat.message);
-        window.location.href = "/compte/connexion";
-
+        window.location.href = "/compte/comptes/utilisateur";
         return true;
 
     } catch (err) {
@@ -151,8 +149,8 @@ async function creerCompte(e) {
 
 function initialiserValidation() {
     document.getElementById("nom").addEventListener("input", validerNom);
-    document.getElementById("prenom") .addEventListener("input", validerPrenom);
-    document.getElementById("courriel") .addEventListener("input", validerCourriel);
+    document.getElementById("prenom").addEventListener("input", validerPrenom);
+    document.getElementById("courriel").addEventListener("input", validerCourriel);
     document.getElementById("courriel").addEventListener("input", verifierCourrielExiste);
     document.getElementById("mot_de_passe").addEventListener("input", validerMotDePasse);
     document.getElementById("confirmation_mot_de_passe").addEventListener("input", validerConfirmation);

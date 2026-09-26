@@ -18,7 +18,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto gap-lg-5">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="#"> Accueil</a>
+                        <a class="nav-link text-dark" href="{{ url_for('accueil') }}"> Accueil</a>
                     </li>
 
                     <li class="nav-item">
@@ -33,15 +33,15 @@
                         <a class="nav-link text-dark" href="#"> Nous joindre</a>
                     </li>
                     {% if session.get('id_utilisateur') %}
-                   <li class="nav-item">
-                    <a class="nav-link text-dark" href="#"> Deconnexion</a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ url_for('compte.page_connexion') }}"> Connexion</a>
-                </li>
-                {% endif %}
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url_for('compte.page_utilisateur') }}"> Compte</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url_for('compte.page_connexion') }}"> Connexion</a>
+                    </li>
+                    {% endif %}
+                </ul>
 
                 <a href="#" class="btn btn-dark rounded-0 px-4 py-3">Réserver maintenant </a>
             </div>

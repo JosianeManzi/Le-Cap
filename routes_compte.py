@@ -3,7 +3,7 @@ from flask import Blueprint,render_template, request, jsonify, session
 import bd
 import hashlib
 bp_compte = Blueprint("compte", __name__,)
-
+from flask import session, redirect, url_for,flash
 
 @bp_compte.route("/creer", methods=["GET"])
 def page_creer_compte():
@@ -32,18 +32,20 @@ def creer_compte():
     nom = request.form.get("nom", "").strip()
     prenom = request.form.get("prenom", "").strip()
     mot_de_passe_hache = hacher_mdp(mot_de_passe)
+
     try:
         with bd.creer_connexion() as conn:
-            bd.ajouter_utilisateur(conn,courriel,mot_de_passe_hache,nom,prenom)
+            bd.ajouter_utilisateur(conn, courriel, mot_de_passe_hache, nom, prenom)
+            utilisateur = bd.chercher_utilisateur(conn, courriel, mot_de_passe_hache)
 
     except Exception as e:
-        return jsonify({"succes": False,"message": "Erreur serveur."}), 500
+        return jsonify({"succes": False, "message": "Erreur serveur."}), 500
 
-    return jsonify({"succes": True,"message": "Compte créé avec succès."}), 201
+    session["id_utilisateur"] = utilisateur["id"]
+    session["nom"] = utilisateur["nom"]
 
-from flask import session, redirect, url_for
+    return jsonify({"succes": True, "message": "Compte créé avec succès."}), 201
 
-from flask import session, redirect, url_for, flash
 
 @bp_compte.route("/connexion", methods=["POST"])
 def connexion():
@@ -71,11 +73,23 @@ def connexion():
     session["id_utilisateur"] = utilisateur["id"]
     session["nom"] = utilisateur["nom"]
     flash("Connexion réussie.")
-    return redirect(url_for("compte.page_utilisateur", utilisateur=utilisateur))
+    return redirect(url_for("compte.page_utilisateur"))
 
-
-
-@bp_compte.route("comptes/utilisateur")
+@bp_compte.route("/comptes/utilisateur")
 def page_utilisateur():
-    return render_template("comptes/utilisateur.jinja")
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
 
+    with bd.creer_connexion() as conn:
+        utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
+
+    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur)
+
+
+@bp_compte.route('/deconnexion')
+def deconnexion():
+    nom = session.get('nom')
+    session.clear()
+    flash(f"{nom} a été déconnecté avec succès.", "info")
+    return redirect(url_for('compte.page_connexion'))
