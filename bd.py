@@ -63,5 +63,21 @@ def ajouter_utilisateur(conn, courriel, mot_de_passe, nom, prenom, est_admin=0):
     with conn.get_curseur() as curseur:
         curseur.execute("""
             INSERT INTO utilisateurs (email, mot_de_passe, nom, prenom, est_admin)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (courriel, mot_de_passe, nom, prenom, est_admin))
+            VALUES (%s, %s, %s, %s, 0)
+        """, (courriel, mot_de_passe, nom, prenom))
+
+def chercher_utilisateur(conn, courriel, mot_de_passe_hache):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT * FROM utilisateurs WHERE email = %s AND mot_de_passe = %s",
+            (courriel, mot_de_passe_hache)
+        )
+        utilisateur = curseur.fetchone()
+        return utilisateur
+def obtenir_utilisateur(conn, id_utilisateur):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT * FROM utilisateurs WHERE id = %s",
+            (id_utilisateur,)
+        )
+        return curseur.fetchone()

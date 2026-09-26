@@ -15,7 +15,7 @@
                         <p class="text-muted"> Rejoignez Le-Cap dès maintenant </p>
                     </div>
 
-                    <form id="form-creer-compte">
+                    <form id="form-creer-compte" >
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="nom" class="form-label fw-semibold">Nom</label>
@@ -63,9 +63,9 @@
                                 Créer compte
                             </button>
 
-                            <button type="submit" class="btn btn-primary btn-lg rounded-3" style="width: 200px;">
+                            <a href="{{ url_for('compte.page_connexion') }}" class="btn btn-primary btn-lg rounded-3" style="width: 200px;">
                                 Connexion
-                            </button>
+                            </a>
                         </div>
                     </form>
                 </div>
