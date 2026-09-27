@@ -2,6 +2,7 @@ from flask import Flask,render_template
 from dotenv import load_dotenv
 import os
 from routes_compte import bp_compte
+from routes_chambres import bp_chambres
 
 
 if not os.getenv("DB_USER"):

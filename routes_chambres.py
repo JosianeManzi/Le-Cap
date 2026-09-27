@@ -28,7 +28,9 @@ def ajouter_chambre():
     try:
         with bd.creer_connexion() as conn:
             bd.ajouter_chambre(conn, type_chambre, description, prix_nuit, image, disponible)
-    except Exception:
+    except Exception as e :
+        print("ERREUR AJOUTER_CHAMBRE:", e)
+
         return jsonify({"succes": False, "message": "Erreur serveur."}), 500
 
     return jsonify({"succes": True, "message": "Chambre ajoutée avec succès."}), 201
