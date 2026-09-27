@@ -14,4 +14,8 @@ main {
 
 footer {
   width: 100%;
+  height: auto;
+}
+body {
+    padding-bottom: 160px;
 }
