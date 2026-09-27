@@ -5,9 +5,6 @@ footer {
   width: 100%;
   height: auto;
 }
-.page-inscription {
-    padding: 30px 15px 160px 15px;
-}
-.page-ajouter-chambre {
-    padding: 30px 15px 160px 15px;
+body {
+    padding-bottom: 160px;
 }

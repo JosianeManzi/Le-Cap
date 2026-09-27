@@ -48,19 +48,22 @@ async function ajouterChambre(e) {
     const form = document.getElementById("form-ajouter-chambre");
     const donnees = new FormData(form);
 
-    // La case "disponible" n'envoie rien si décochée : on force la valeur
     if (!document.getElementById("disponible").checked) {
         donnees.set("disponible", "0");
     }
 
-    const parametres = Object.fromEntries(donnees);
-
     try {
-        const resultat = await envoyerRequeteAjax(
-            "/chambres/ajouter_chambre",
-            "POST",
-            parametres
-        );
+        const reponse = await fetch("/chambres/ajouter_chambre", {
+            method: "POST",
+            body: donnees
+        });
+
+        const resultat = await reponse.json();
+
+        if (!reponse.ok) {
+            throw new Error(resultat.message || "Erreur serveur.");
+        }
+
         alert(resultat.message);
         form.reset();
         return true;
@@ -70,7 +73,6 @@ async function ajouterChambre(e) {
         return false;
     }
 }
-
 
 function initialiserValidation() {
     document.getElementById("type_chambre").addEventListener("input", validerType);
