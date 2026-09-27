@@ -1,21 +1,30 @@
- 
-from flask import Blueprint,render_template, request, jsonify, session
+import os
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash
 import bd
 import hashlib
-bp_compte = Blueprint("compte", __name__,)
+
+bp_compte = Blueprint("compte", __name__)
+
+
+def hacher_mdp(mdp):
+    """hacher mdp"""
+    return hashlib.sha512(mdp.encode('utf-8')).hexdigest()
 
 
 @bp_compte.route("/creer", methods=["GET"])
 def page_creer_compte():
     return render_template("comptes/creer_compte.jinja")
 
+
+@bp_compte.route("/creer_admin", methods=["GET"])
+def page_creer_compte_admin():
+    return render_template("comptes/creer_compte_admin.jinja")
+
+
 @bp_compte.route("/connexion", methods=["GET"])
 def page_connexion():
     return render_template("comptes/connexion.jinja")
 
-def hacher_mdp(mdp):
-    """hacher mdp"""
-    return hashlib.sha512(mdp.encode('utf-8')).hexdigest()
 
 @bp_compte.route("/verifier_courriel", methods=["POST"])
 def verifier_courriel():
@@ -24,26 +33,28 @@ def verifier_courriel():
         existe = bd.utilisateur_existe(conn, courriel)
     return jsonify({"existe": existe})
 
+
 @bp_compte.route("/creer_compte", methods=["POST"])
 def creer_compte():
-
     courriel = request.form.get("courriel", "").strip()
     mot_de_passe = request.form.get("mot_de_passe", "").strip()
     nom = request.form.get("nom", "").strip()
     prenom = request.form.get("prenom", "").strip()
     mot_de_passe_hache = hacher_mdp(mot_de_passe)
+
     try:
         with bd.creer_connexion() as conn:
-            bd.ajouter_utilisateur(conn,courriel,mot_de_passe_hache,nom,prenom)
+            bd.ajouter_utilisateur(conn, courriel, mot_de_passe_hache, nom, prenom)
+            utilisateur = bd.chercher_utilisateur(conn, courriel, mot_de_passe_hache)
 
     except Exception as e:
-        return jsonify({"succes": False,"message": "Erreur serveur."}), 500
+        return jsonify({"succes": False, "message": "Erreur serveur."}), 500
 
-    return jsonify({"succes": True,"message": "Compte créé avec succès."}), 201
+    session["id_utilisateur"] = utilisateur["id"]
+    session["nom"] = utilisateur["nom"]
 
-from flask import session, redirect, url_for
+    return jsonify({"succes": True, "message": "Compte créé avec succès."}), 201
 
-from flask import session, redirect, url_for, flash
 
 @bp_compte.route("/connexion", methods=["POST"])
 def connexion():
@@ -70,12 +81,55 @@ def connexion():
 
     session["id_utilisateur"] = utilisateur["id"]
     session["nom"] = utilisateur["nom"]
+    session["est_admin"] = bool(utilisateur["est_admin"])
     flash("Connexion réussie.")
-    return redirect(url_for("compte.page_utilisateur", utilisateur=utilisateur))
+    return redirect(url_for("compte.page_utilisateur"))
 
-
-
-@bp_compte.route("comptes/utilisateur")
+@bp_compte.route("/comptes/utilisateur")
 def page_utilisateur():
-    return render_template("comptes/utilisateur.jinja")
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
 
+    with bd.creer_connexion() as conn:
+        utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
+
+    if session.get("est_admin"):
+        return render_template("admin/tableau_bord.jinja", utilisateur=utilisateur)
+
+    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur)
+
+@bp_compte.route('/deconnexion')
+def deconnexion():
+    nom = session.get('nom')
+    session.clear()
+    flash(f"{nom} a été déconnecté avec succès.", "info")
+    return redirect(url_for('compte.page_connexion'))
+
+@bp_compte.route("/creer_admin", methods=["POST"])
+def creer_compte_admin():
+    courriel = request.form.get("courriel", "").strip()
+    mot_de_passe = request.form.get("mot_de_passe", "").strip()
+    nom = request.form.get("nom", "").strip()
+    prenom = request.form.get("prenom", "").strip()
+    code_secret = request.form.get("code_secret", "").strip()
+
+    if code_secret != os.getenv("CODE_SECRET_ADMIN"):
+        return jsonify({"succes": False, "message": "Code secret invalide."}), 403
+
+    mot_de_passe_hache = hacher_mdp(mot_de_passe)
+
+    try:
+        with bd.creer_connexion() as conn:
+            bd.ajouter_utilisateur(conn, courriel, mot_de_passe_hache, nom, prenom, est_admin=1)
+            utilisateur = bd.chercher_utilisateur(conn, courriel, mot_de_passe_hache)
+    except Exception as e:
+        print("ERREUR CREER_COMPTE_ADMIN:", e)
+
+        return jsonify({"succes": False, "message": "Erreur serveur."}), 500
+
+    session["id_utilisateur"] = utilisateur["id"]
+    session["nom"] = utilisateur["nom"]
+    session["est_admin"] = bool(utilisateur["est_admin"])
+
+    return jsonify({"succes": True, "message": "Compte admin créé avec succès."}), 201
