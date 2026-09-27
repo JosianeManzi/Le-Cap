@@ -12,7 +12,6 @@ def page_ajouter_chambre():
 
 
 @bp_chambres.route("/ajouter_chambre", methods=["POST"])
-@bp_chambres.route("/ajouter_chambre", methods=["POST"])
 def ajouter_chambre():
     type_chambre = request.form.get("type_chambre", "").strip()
     description = request.form.get("description", "").strip()
