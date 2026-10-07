@@ -19,3 +19,44 @@ footer {
 body {
     padding-bottom: 160px;
 }
+.shadow-dark {
+    box-shadow: 0 0px 60px rgba(255, 255, 255, 0.35);
+}
+.color {
+    background-color: #a4c8f7;
+}
+.search-bar {
+    color: #e6f1f3;
+}
+
+.search-bar .pill {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50rem;
+    backdrop-filter: blur(6px);
+}
+
+.search-bar .pill:focus-within {
+    border-color: #5fd3c4;
+}
+
+.search-bar .form-control {
+    background: transparent;
+    border: 0;
+    color: #e6f1f3;
+    color-scheme: dark;
+}
+
+.search-bar .date-placeholder {
+    color: rgba(10, 233, 237, 0.456);
+}
+
+.search-bar .btn-search {
+    background: #5fd3c4;
+    color: #012a33;
+    font-weight: 600;
+}
+
+.search-bar .btn-search:hover {
+    background: #86e3d6;
+}
