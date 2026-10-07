@@ -12,14 +12,17 @@
                         <h1 class="fw-bold mb-2">Ajouter une chambre</h1>
                     </div>
 
-                    <form id="form-ajouter-chambre" enctype="multipart/form-data">
+                    <form id="form-ajouter-chambre" enctype="multipart/form-data" novalidate>
                         <div class="mb-3">
                             <label for="type_chambre" class="form-label fw-semibold">Type de chambre</label>
-                            <input type="text" class="form-control form-control-lg" id="type_chambre"
-                                name="type_chambre" placeholder="Simple, Double, Suite...">
+                            <select class="form-select form-select-lg" id="type_chambre" name="type_chambre">
+                                <option value="" selected disabled>Choisir un type...</option>
+                                <option value="Standard">Standard</option>
+                                <option value="Suite">Suite</option>
+                                <option value="Luxueux">Luxueux</option>
+                            </select>
                             <div id="erreur-type" class="text-danger small"></div>
                         </div>
-
                         <div class="mb-3">
                             <label for="description" class="form-label fw-semibold">Description</label>
                             <textarea class="form-control form-control-lg" id="description" name="description"
@@ -33,11 +36,20 @@
                                 name="prix_nuit">
                             <div id="erreur-prix" class="text-danger small"></div>
                         </div>
-
+                        <div class="mb-3">
+                            <label for="nb_personnes" class="form-label fw-semibold">Nombre de personnes</label>
+                            <select class="form-select form-select-lg" id="nb_personnes" name="nb_personnes">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="image" class="form-label fw-semibold">Image de la chambre</label>
                             <input type="file" class="form-control form-control-lg" id="image" name="image"
-                                accept="image/*">
+                                accept="image/*" required>
+                            <div id="erreur-image" class="text-danger small"></div>
                         </div>
 
                         <div class="mb-4 form-check">
