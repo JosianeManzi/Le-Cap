@@ -65,8 +65,7 @@ async function ajouterChambre(e) {
             throw new Error(resultat.message || "Erreur serveur.");
         }
 
-        alert(resultat.message);
-        form.reset();
+        window.location.href = "/chambres/liste";
         return true;
 
     } catch (err) {
