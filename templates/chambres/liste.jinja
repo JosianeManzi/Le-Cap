@@ -11,18 +11,15 @@
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card border-0 shadow-lg rounded-4 h-100">
                 {% if chambre.image %}
-                <img src="{{ url_for('static', filename='img/' + chambre.image) }}" class="card-img-top rounded-top-4" alt="{{ chambre.type_chambre }}">
+                <img src="{{ url_for('static', filename='img/' + chambre.image) }}" class="card-img-top rounded-top-4"
+                    alt="{{ chambre.type_chambre }}">
                 {% endif %}
                 <div class="card-body p-4">
                     <h3 class="fw-bold">{{ chambre.type_chambre }}</h3>
                     <p class="text-muted">{{ chambre.description }}</p>
-                    <p class="fw-semibold fs-5">{{ chambre.prix_nuit }} $ / nuit</p>
-
-                    {% if chambre.disponible %}
-                        <span class="badge bg-success">Disponible</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Indisponible</span>
-                    {% endif %}
+                    <p class="fw-semibold fs-5 mb-1">{{ chambre.prix_nuit }} $ / nuit</p>
+                    <p class="mb-3">👥 {{ chambre.nb_personnes }} personne{{ 's' if chambre.nb_personnes > 1 }}</p>
+                    <a href="#" class="btn btn-primary rounded-3">Réserver</a>
                 </div>
             </div>
         </div>

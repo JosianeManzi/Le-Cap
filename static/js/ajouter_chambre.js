@@ -40,8 +40,9 @@ async function ajouterChambre(e) {
     const typeValide = validerType();
     const descriptionValide = validerDescription();
     const prixValide = validerPrix();
+    const imageValide = validerImage();
 
-    if (!typeValide || !descriptionValide || !prixValide) {
+    if (!typeValide || !descriptionValide || !prixValide || !imageValide) {
         return false;
     }
 
@@ -72,12 +73,27 @@ async function ajouterChambre(e) {
         return false;
     }
 }
+function validerImage() {
+    const fichier = document.getElementById("image").files[0];
+    const msg = document.getElementById("erreur-image");
+    msg.textContent = "";
+    if (!fichier) {
+        msg.textContent = "L'image est obligatoire.";
+        return false;
+    }
+    if (!fichier.type.startsWith("image/")) {
+        msg.textContent = "Le fichier doit être une image.";
+        return false;
+    }
+    return true;
+}
 
 function initialiserValidation() {
     document.getElementById("type_chambre").addEventListener("input", validerType);
     document.getElementById("description").addEventListener("input", validerDescription);
     document.getElementById("prix_nuit").addEventListener("input", validerPrix);
     document.getElementById("form-ajouter-chambre").addEventListener("submit", ajouterChambre);
+    document.getElementById("image").addEventListener("change", validerImage);
     return true;
 }
 window.addEventListener("load", initialiserValidation);
