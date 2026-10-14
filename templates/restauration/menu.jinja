@@ -1,0 +1,49 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Restauration{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+
+    <div class="mb-5 text-center">
+        <h1 class="fw-bold">Notre restaurant</h1>
+        <p class="text-muted">Une cuisine raffinée, préparée avec des produits locaux.</p>
+    </div>
+    <div class="d-flex justify-content-end mb-4">
+    <a href="{{ url_for('restauration.page_panier') }}" class="btn btn-outline-primary rounded-3">
+        🛒 Mon panier ({{ nb_articles }})
+    </a>
+</div>
+
+    {% for cle, titre, icone in categories %}
+    <section class="mb-5">
+        <h2 class="fw-bold mb-4 text-center">
+            <span class="me-2">{{ icone }}</span>{{ titre }}
+        </h2>
+
+        <div class="row g-4 justify-content-center">
+            {% for plat in plats_par_categorie[cle] %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card border-0 shadow-lg rounded-4 h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h4 class="fw-bold">{{ plat.nom }}</h4>
+                        <p class="text-muted flex-grow-1">{{ plat.description }}</p>
+                        <p class="fw-semibold fs-5 mb-3">{{ '%.2f'|format(plat.prix) }} $</p>
+                        <form method="post" action="{{ url_for('restauration.ajouter_au_panier', id_plat=plat.id) }}">
+                            <button type="submit" class="btn btn-primary rounded-3 w-100">Ajouter au panier</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-center text-muted">Aucun plat disponible pour le moment.</p>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

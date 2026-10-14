@@ -93,3 +93,22 @@ def obtenir_utilisateur(conn, id_utilisateur):
             (id_utilisateur,)
         )
         return curseur.fetchone()
+
+def obtenir_plats(conn):
+    """Retourne tous les plats disponibles, classés par catégorie puis par nom"""
+    with conn.get_curseur() as curseur:
+        curseur.execute("SELECT * FROM plats WHERE disponible = 1 ORDER BY categorie, nom")
+        return curseur.fetchall()
+
+
+def obtenir_plats_par_ids(conn, ids):
+    """Retourne les plats dont l'id est dans la liste"""
+    if not ids:
+        return []
+    marqueurs = ", ".join(["%s"] * len(ids))
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            f"SELECT * FROM plats WHERE disponible = 1 AND id IN ({marqueurs}) ORDER BY categorie, nom",
+            tuple(ids)
+        )
+        return curseur.fetchall()
