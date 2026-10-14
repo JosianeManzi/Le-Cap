@@ -3,32 +3,38 @@
 {% block titre %}Réserver - Le-Cap{% endblock %}
 
 {% block contenu %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/search-bar.css') }}">
 
 <div class="container py-5">
-    <form
-        class="search-bar d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-center gap-3 shadow-dark rounded-pill p-4 mx-auto"
-        method="get" action="#">
-
-        <div class="pill d-flex align-items-center gap-2 px-4 py-2">
-            <div class="pill d-flex align-items-center gap-2 px-4">
-                <span class="date-placeholder">Arrivée</span>
-                <input type="date" name="arrivee" placeholder="Arrivée" class="form-control w-auto">
+    <form class="search-bar d-flex align-items-stretch align-items-lg-center justify-content-center gap-3 shadow-dark rounded-pill p-4 mx-auto"
+        method="post" action="{{ url_for('reservations.liste') }}">
+        <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-center gap-3">
+            <div class="pill d-flex align-items-center gap-2 px-4 py-2">
+                <div class="pill d-flex align-items-center gap-2 px-4">
+                    <span class="date-placeholder">Arrivée</span>
+                    <input type="date" name="arrivee" value="{{ arrivee }}" class="form-control w-auto">
+                </div>
+                <span class="date-placeholder">→</span>
+                <div class="pill d-flex align-items-center gap-2 px-4">
+                    <span class="date-placeholder">Départ</span>
+                    <input type="date" name="depart" value="{{ depart }}" class="form-control w-auto">
+                </div>
             </div>
-            <span class="date-placeholder">→</span>
-            <div class="pill d-flex align-items-center gap-2 px-4">
-                <span class="date-placeholder">Départ</span>
-                <input type="date" name="depart" class="form-control w-auto">
+
+            <div class="pill d-flex align-items-center gap-2 px-4 py-2">
+                <span class="date-placeholder">👤</span>
+                <input type="number" name="clients" value="{{ clients }}" min="1" max="4"
+                    class="form-control text-center w-auto">
+                <span>Clients</span>
             </div>
-
+            <button type="submit" class="btn btn-search rounded-pill px-4 py-3">Rechercher</button>
         </div>
-
-        <div class="pill d-flex align-items-center gap-2 px-4 py-2">
-            <span class="date-placeholder">👤</span>
-            <input type="number" name="clients" value="1" min="1" max="4" class="form-control text-center w-auto">
-            <span>Clients</span>
-        </div>
-        <button type="submit" class="btn btn-search rounded-pill px-4 py-3">Rechercher</button>
     </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for categorie, message in messages %}
+            <div class="text-danger text-center mt-4">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
 </div>
+
 {% endblock %}

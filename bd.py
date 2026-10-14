@@ -93,3 +93,12 @@ def obtenir_utilisateur(conn, id_utilisateur):
             (id_utilisateur,)
         )
         return curseur.fetchone()
+
+def obtenir_liste_chambres(conn, arrivee, depart, clients):
+    with conn.get_curseur() as curseur:
+        curseur.execute("""SELECT c.* FROM chambres c WHERE c.disponible = 1 AND c.nb_personnes >= %s
+              AND NOT EXISTS ( SELECT 1 FROM reservations r WHERE r.chambre_id = c.id
+              AND r.date_arrivee < %s AND r.date_depart > %s ) ORDER BY c.prix_nuit """,
+            (clients, depart, arrivee),
+        )
+        return curseur.fetchall()

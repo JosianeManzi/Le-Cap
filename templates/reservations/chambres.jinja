@@ -1,0 +1,86 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Chambres - Le-Cap{% endblock %}
+
+{% block contenu %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<div class="container py-5">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <h2 class="mb-0 text-white">Chambres disponibles</h2>
+        <a href="{{ url_for('reservations.reserver', arrivee=arrivee, depart=depart, clients=clients) }}"
+            class="btn btn-outline-info rounded-pill px-4">
+            ≡ filtre
+        </a>
+    </div>
+
+    {% if chambres %}
+    <div class="d-flex flex-column gap-4">
+        {% for chambre in chambres %}
+        <div class="room-card card bg-dark bg-opacity-50 text-white border-info border-opacity-25 rounded-4 overflow-hidden">
+            <div class="row g-0">
+
+                <div class="col-md-4">
+                    <div class="room-photo h-100">
+                        {% if chambre.image %}
+                        <img src="{{ url_for('static', filename='img/' + chambre.image) }}"
+                             alt="{{ chambre.type_chambre }}" class="w-100 h-100">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-5 d-flex">
+                    <div class="card-body d-flex flex-column justify-content-center p-4">
+                        <h3 class="card-title mb-2">{{ chambre.type_chambre }}</h3>
+                        <p class="card-text text-white-50 mb-3">{{ chambre.description }}</p>
+
+                        <span class="badge rounded-pill text-bg-info align-self-start px-3 py-2">
+                            <i class="fa-solid fa-user"></i>
+                            {% if chambre.nb_personnes > 1 %}
+                            {{ chambre.nb_personnes }} clients max
+                            {% else %}
+                            {{ chambre.nb_personnes }} client max
+                            {% endif %}
+                        </span>
+
+                        <div class="mt-4">
+                            <div class="text-white-50 small mb-2">Services inclus</div>
+                            <div class="d-flex flex-wrap gap-2 text-info">
+                                <span class="rounded-circle bg-info bg-opacity-10 p-2" title="Wi-Fi"><i class="fa-solid fa-wifi fa-fw"></i></span>
+                                <span class="rounded-circle bg-info bg-opacity-10 p-2" title="TV"><i class="fa-solid fa-tv fa-fw"></i></span>
+                                {% if chambre.type_chambre in ['Suite', 'Luxueux'] %}
+                                <span class="rounded-circle bg-info bg-opacity-10 p-2" title="Piscine"><i class="fa-solid fa-person-swimming fa-fw"></i></span>
+                                {% endif %}
+                                {% if chambre.type_chambre == 'Luxueux' %}
+                                <span class="rounded-circle bg-info bg-opacity-10 p-2" title="Gym"><i class="fa-solid fa-dumbbell fa-fw"></i></span>
+                                <span class="rounded-circle bg-info bg-opacity-10 p-2" title="Petit-déjeuner"><i class="fa-solid fa-mug-hot fa-fw"></i></span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 d-flex flex-column justify-content-center align-items-center text-center p-4 gap-3 border-top border-info border-opacity-25">
+                    <div>
+                        <div class="display-6 fw-semibold text-info">{{ chambre.prix_nuit }} $</div>
+                        <div class="text-white-50 small">par nuit</div>
+                    </div>
+                    <a href="#" class="btn btn-info rounded-pill px-4 fw-semibold w-100">Réserver</a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center text-secondary py-5">
+        <i class="fa-solid fa-bed fs-1 mb-3"></i>
+        <h3>Aucune chambre disponible</h3>
+        <p>Essayez d'autres dates ou moins de clients.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -60,3 +60,17 @@ body {
 .search-bar .btn-search:hover {
     background: #86e3d6;
 }
+.room-card {
+    transition: transform, .2s;
+}
+.room-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgb(5, 209, 240);
+}
+
+.room-photo img {
+    transition: transform .4s;
+}
+.room-card:hover .room-photo img {
+    transform: scale(1.05);
+}
