@@ -102,3 +102,15 @@ def obtenir_liste_chambres(conn, arrivee, depart, clients):
             (clients, depart, arrivee),
         )
         return curseur.fetchall()
+
+def ajouter_reservation(conn, id_utilisateur, id_chambre, arrivee, depart):
+    with conn.get_curseur() as curseur:
+        curseur.execute(""" INSERT INTO reservations (utilisateur_id, chambre_id, date_arrivee, date_depart)
+            VALUES (%s, %s, %s, %s) """
+            , (id_utilisateur, id_chambre, arrivee, depart))
+
+def obtenir_reservations_utilisateur(conn, id_utilisateur):
+    with conn.get_curseur() as curseur:
+        curseur.execute(""" SELECT * FROM reservations r JOIN chambres c ON c.id = r.chambre_id
+            WHERE r.utilisateur_id = %s ORDER BY r.date_arrivee DESC """, (id_utilisateur,))
+        return curseur.fetchall()

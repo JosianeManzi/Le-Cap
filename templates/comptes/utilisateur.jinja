@@ -3,28 +3,70 @@
 {% block titre %}Mon compte{% endblock %}
 
 {% block contenu %}
-<div class="container mt-5 mb-5">
+<div class="container py-5">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <h2 class="fw-normal mb-4">Mon compte</h2>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <h2 class="mb-0 text-white">Mon compte</h2>
+    <a href="{{ url_for('compte.deconnexion') }}" class="btn btn-danger rounded-pill px-4">Déconnexion</a>
+  </div>
 
   <div class="row g-4">
 
-    <div class="col-md-4">
-      <div class="border rounded p-4 h-100">
-        <h5 class="fw-normal mb-3">Informations</h5>
-        <p class="mb-1"><strong>Nom :</strong> {{ utilisateur.nom }}</p>
-        <p class="mb-1"><strong>Prénom :</strong> {{ utilisateur.prenom }}</p>
-        <p class="mb-0"><strong>Courriel :</strong> {{ utilisateur.email }}</p>
+    <div class="col-lg-4">
+      <div class="card bg-dark bg-opacity-50 text-white border-info border-opacity-25 rounded-4 h-100">
+        <div class="card-body p-4">
+          <h5 class="text-info mb-4"><i class="fa-solid fa-user me-2"></i>Informations</h5>
+          <div class="mb-3">
+            <div class="text-white-50 small">Nom</div>
+            <div>{{ utilisateur.nom }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="text-white-50 small">Prénom</div>
+            <div>{{ utilisateur.prenom }}</div>
+          </div>
+          <div>
+            <div class="text-white-50 small">Courriel</div>
+            <div>{{ utilisateur.email }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card bg-dark bg-opacity-50 text-white border-info border-opacity-25 rounded-4 h-100">
+        <div class="card-body p-4">
+          <h5 class="text-info mb-4">Mes réservations</h5>
+
+          {% if reservations %}
+          <div class="d-flex flex-column gap-3">
+            {% for r in reservations %}
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 border border-info border-opacity-25 rounded-3 p-3">
+              <div>
+                <div class="fw-semibold fs-5">{{ r.type_chambre }}</div>
+                <div class="text-white-50 small">
+                  Du {{ r.date_arrivee }}
+                  au {{ r.date_depart}}
+                </div>
+              </div>
+
+              <div class="text-end">
+                <div class="text-info fw-semibold">{{ r.prix_nuit }} $ <span class="text-white-50 small fw-normal">par nuit</span></div>
+                <a href="#" class="btn btn-danger btn-sm rounded-pill px-3 mt-2">Annuler</a>
+              </div>
+
+            </div>
+            {% endfor %}
+          </div>
+
+          {% else %}
+          <p class="text-white-50 mb-0">Aucune réservation pour le moment.</p>
+          {% endif %}
+
+        </div>
       </div>
     </div>
 
   </div>
-
-  <h5 class="fw-normal mt-5 mb-3">Mes réservations</h5>
-  <p class="mb-0"><strong>Aucune réservation</strong></p>
-
-
-  <a href="{{ url_for('compte.deconnexion') }}" class="btn btn-outline-danger">Déconnexion</a>
-
 </div>
 {% endblock %}

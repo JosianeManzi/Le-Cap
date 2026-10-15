@@ -66,7 +66,7 @@
                         <div class="display-6 fw-semibold text-info">{{ chambre.prix_nuit }} $</div>
                         <div class="text-white-50 small">par nuit</div>
                     </div>
-                    <a href="#" class="btn btn-info rounded-pill px-4 fw-semibold w-100">Réserver</a>
+                    <a href="{{ url_for('reservations.reservations', id_chambre=chambre.id, arrivee=arrivee, depart=depart, clients=clients) }}" class="btn btn-info rounded-pill px-4 fw-semibold w-100">Réserver</a>
                 </div>
 
             </div>

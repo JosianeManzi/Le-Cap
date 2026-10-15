@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for,flash, session
 import bd
 from datetime import date
 
@@ -11,7 +11,6 @@ def reserver():
     clients = request.args.get("clients", 1,type=int)
     return render_template("reservations/navigation.jinja", arrivee=arrivee, depart=depart, clients=clients)
 
-from flask import request, render_template, redirect, url_for, flash
 
 @bp_reservations.route("/chambres", methods=["POST"])
 def liste():
@@ -40,3 +39,20 @@ def liste():
         return retour("Erreur serveur.")
     return render_template("reservations/chambres.jinja",chambres=chambres,arrivee=arrivee,depart=depart,clients=clients,
     )
+@bp_reservations.route("/reservations")
+def reservations():
+    if "id_utilisateur" not in session:
+        flash("Connectez-vous pour réserver.", "erreur")
+        return redirect(url_for("compte.page_connexion"))
+
+    id_chambre = request.args.get("id_chambre", type=int)
+    arrivee = request.args.get("arrivee", "")
+    depart = request.args.get("depart", "")
+    clients = request.args.get("clients", 1, type=int)
+    try:
+        with bd.creer_connexion() as conn:
+            bd.ajouter_reservation(conn, session["id_utilisateur"], id_chambre, arrivee, depart)
+    except Exception:
+        return redirect(url_for("reservations.reserver", arrivee=arrivee, depart=depart, clients=clients))
+
+    return redirect(url_for("compte.page_utilisateur"))
