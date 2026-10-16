@@ -17,6 +17,7 @@ def liste():
     arrivee = request.form.get("arrivee", "")
     depart = request.form.get("depart", "")
     clients = request.form.get("clients", 1,type=int)
+    type_chambre = request.form.get("type_chambre", "") 
 
     def retour(message):
         flash(message, "erreur")
@@ -34,7 +35,7 @@ def liste():
 
     try:
         with bd.creer_connexion() as conn:
-            chambres = bd.obtenir_liste_chambres(conn, arrivee, depart, clients)
+            chambres = bd.obtenir_liste_chambres(conn, arrivee, depart, clients, type_chambre)
     except Exception:
         return retour("Erreur serveur.")
     return render_template("reservations/chambres.jinja",chambres=chambres,arrivee=arrivee,depart=depart,clients=clients,

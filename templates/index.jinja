@@ -1,3 +1,4 @@
+
 {% extends "base.jinja" %}
 
 {% block titre %}Accueil{% endblock %}
@@ -5,52 +6,115 @@
 {% block contenu %}
 
 
-<section class="text-center py-5 border-bottom">
-    <h1 class="fw-normal">Bienvenue à Hôtel Le Cap</h1>
-    <p class="text-muted">Une expérience exceptionnelle</p>
+<section class="hero-window">
+    <div class="hero-track">
+
+        <div class="hero-slide"
+             style="background-image: url('{{ url_for('static', filename='img/interior1.jpg') }}');">
+            <div class="hero-content">
+                <h1>Bienvenue à Hôtel Le Cap</h1>
+                <p>Une expérience exceptionnelle</p>
+            </div>
+        </div>
+
+        <div class="hero-slide"
+             style="background-image: url('{{ url_for('static', filename='img/interior2.jpg') }}');">
+            <div class="hero-content">
+                <h1>Le confort à votre portée</h1>
+                <p>Profitez d'un séjour inoubliable</p>
+            </div>
+        </div>
+
+        <div class="hero-slide"
+             style="background-image: url('{{ url_for('static', filename='img/luxueux2.jpg') }}');">
+            <div class="hero-content">
+                <h1>Votre séjour commence ici</h1>
+                <p>Découvrez l'expérience Hôtel Le Cap</p>
+            </div>
+        </div>
+
+    </div>
 </section>
 
-
-<section class="text-center py-5 border-bottom">
+<section id="chambres" class="text-center p-5 border-bottom">
     <h2 class="fw-normal mb-5">NOS CHAMBRES</h2>
+
     <div class="container">
         <div class="row g-4 justify-content-center">
+
             <div class="col-md-4">
-                <img src="#" class="w-100 border" alt="Chambre Standard">
-                <p class="mt-3">Chambre Standard</p>
+                <div class="section-card">
+                    <img src="{{ url_for('static', filename='img/standard2.jpg') }}"
+                         class="section-img border"
+                         alt="Chambre Standard">
+                    <p class="mt-3">Chambre Standard</p>
+                </div>
             </div>
+
             <div class="col-md-4">
-                <img src="#" class="w-100 border" alt="Suite">
-                <p class="mt-3">Suite</p>
+                <div class="section-card">
+                    <img src="{{ url_for('static', filename='img/suite3.jpg') }}"
+                         class="section-img border"
+                         alt="Suite">
+                    <p class="mt-3">Suite</p>
+                </div>
             </div>
+
             <div class="col-md-4">
-                <img src="#" class="w-100 border" alt="Chambre Deluxe">
-                <p class="mt-3">Chambre Deluxe</p>
+                <div class="section-card">
+                    <img src="{{ url_for('static', filename='img/luxueux3.jpg') }}"
+                         class="section-img border"
+                         alt="Chambre Deluxe">
+                    <p class="mt-3">Chambre Deluxe</p>
+                </div>
             </div>
+
         </div>
     </div>
 </section>
 
-<section class="text-center py-5">
+<section id="services" class="text-center">
     <h2 class="fw-normal mb-5">NOS SERVICES</h2>
-    <div class="container">
-        <div class="row g-4 justify-content-center">
-            <div class="col-6 col-md-3">
-                <img src="#" class="w-100 border" alt="SPA">
-                <p class="mt-3">SPA</p>
-            </div>
-            <div class="col-6 col-md-3">
-                <img src="#" class="w-100 border" alt="SPA">
-                <p class="mt-3">SPA</p>
-            </div>
-            <div class="col-6 col-md-3">
-                <img src="#" class="w-100 border" alt="RESTAURANT">
-                <p class="mt-3">RESTAURANT</p>
 
-            </div>
-            <div class="col-6 col-md-3">
-                <img src="#" class="w-100 border" alt="PISCINE">
-                <p class="mt-3">PISCINE</p>
+    <div class="container">
+        <div class="service-window">
+            <div class="service-track">
+
+                <div class="service-card">
+                    <div class="section-card">
+                        <img src="{{ url_for('static', filename='img/spa.jpg') }}"
+                             class="section-img border"
+                             alt="SPA">
+                        <p class="mt-3">SPA</p>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="section-card">
+                        <img src="{{ url_for('static', filename='img/gym.jpg') }}"
+                             class="section-img border"
+                             alt="Bien-être">
+                        <p class="mt-3">BIEN-ÊTRE</p>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="section-card">
+                        <img src="{{ url_for('static', filename='img/restaurant.jpg') }}"
+                             class="section-img border"
+                             alt="Restaurant">
+                        <p class="mt-3">RESTAURANT</p>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="section-card">
+                        <img src="{{ url_for('static', filename='img/piscine.jpg') }}"
+                             class="section-img border"
+                             alt="Piscine">
+                        <p class="mt-3">PISCINE</p>
+                    </div>
+                </div>
 
             </div>
         </div>
