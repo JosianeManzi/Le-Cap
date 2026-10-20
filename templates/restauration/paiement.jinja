@@ -1,0 +1,81 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Paiement - Commande #{{ commande.id }}{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-6">
+
+            <div class="text-center mb-4">
+                <div class="fs-1 mb-2">💳</div>
+                <h1 class="fw-bold">Paiement</h1>
+                <p class="text-muted mb-0">Commande #{{ commande.id }}</p>
+            </div>
+
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <h4 class="fw-bold mb-0">Total à payer</h4>
+                        <h4 class="fw-bold mb-0">{{ '%.2f'|format(commande.total) }} $</h4>
+                    </div>
+
+                    <div class="alert alert-info small">
+                        Paiement simulé : n'entrez pas une vraie carte.
+                        Exemple : <strong>4242 4242 4242 4242</strong>, expiration future, CVV 123.
+                    </div>
+
+                    {% if erreur %}
+                    <div class="alert alert-danger">{{ erreur }}</div>
+                    {% endif %}
+
+                    <form method="post" action="{{ url_for('restauration.payer', id_commande=commande.id) }}">
+
+                        <div class="mb-3">
+                            <label for="nom_carte" class="form-label">Nom sur la carte</label>
+                            <input type="text" class="form-control" id="nom_carte" name="nom_carte"
+                                   value="{{ nom_carte }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="numero_carte" class="form-label">Numéro de carte</label>
+                            <input type="text" class="form-control" id="numero_carte" name="numero_carte"
+                                   inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456"
+                                   autocomplete="off" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="expiration" class="form-label">Expiration</label>
+                                <input type="text" class="form-control" id="expiration" name="expiration"
+                                       maxlength="5" placeholder="MM/AA" autocomplete="off" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv"
+                                       inputmode="numeric" maxlength="3" placeholder="123"
+                                       autocomplete="off" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary rounded-3 w-100 py-2">
+                            Payer {{ '%.2f'|format(commande.total) }} $
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ url_for('restauration.page_confirmation', id_commande=commande.id) }}"
+                   class="btn btn-outline-primary rounded-3">Payer plus tard</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
