@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request
+from flask import Blueprint, render_template, session, redirect, url_for, request, abort
 import bd
+from datetime import date
 
 bp_restauration = Blueprint("restauration", __name__)
 
@@ -79,3 +80,111 @@ def modifier_panier(id_plat):
 
     session["panier"] = panier
     return redirect(url_for("restauration.page_panier"))
+
+
+
+@bp_restauration.route("/commander", methods=["POST"])
+def commander():
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
+
+    panier = session.get("panier", {})
+    if not panier:
+        return redirect(url_for("restauration.page_panier"))
+
+    with bd.creer_connexion() as conn:
+        plats = bd.obtenir_plats_par_ids(conn, [int(i) for i in panier])
+        lignes = [(p["id"], panier[str(p["id"])], p["prix"]) for p in plats]
+
+        if not lignes:
+            session.pop("panier", None)
+            return redirect(url_for("restauration.page_panier"))
+
+        id_commande = bd.creer_commande(conn, id_utilisateur, lignes)
+
+    session.pop("panier", None)
+    return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
+
+
+@bp_restauration.route("/commande/<int:id_commande>", methods=["GET"])
+def page_confirmation(id_commande):
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
+
+    with bd.creer_connexion() as conn:
+        commande = bd.obtenir_commande(conn, id_commande, id_utilisateur)
+
+    if not commande:
+        abort(404)
+
+    return render_template("restauration/confirmation.jinja", commande=commande)
+
+
+def valider_carte(nom, numero, expiration, cvv):
+    """Retourne un message d'erreur, ou None si tout est correct."""
+    if not nom:
+        return "Le nom sur la carte est obligatoire."
+    if not (numero.isdigit() and len(numero) == 16):
+        return "Le numéro de carte doit contenir 16 chiffres."
+    try:
+        mois, annee = expiration.split("/")
+        mois, annee = int(mois), 2000 + int(annee)
+    except ValueError:
+        return "L'expiration doit être au format MM/AA."
+    if not 1 <= mois <= 12:
+        return "Le mois d'expiration est invalide."
+    aujourdhui = date.today()
+    if (annee, mois) < (aujourdhui.year, aujourdhui.month):
+        return "Cette carte est expirée."
+    if not (cvv.isdigit() and len(cvv) == 3):
+        return "Le code CVV doit contenir 3 chiffres."
+    return None
+
+
+@bp_restauration.route("/commande/<int:id_commande>/paiement", methods=["GET"])
+def page_paiement(id_commande):
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
+
+    with bd.creer_connexion() as conn:
+        commande = bd.obtenir_commande(conn, id_commande, id_utilisateur)
+
+    if not commande:
+        abort(404)
+    if commande["statut"] == "payee":
+        return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
+
+    return render_template("restauration/paiement.jinja", commande=commande, erreur=None, nom_carte="")
+
+
+@bp_restauration.route("/commande/<int:id_commande>/payer", methods=["POST"])
+def payer(id_commande):
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
+
+    with bd.creer_connexion() as conn:
+        commande = bd.obtenir_commande(conn, id_commande, id_utilisateur)
+
+    if not commande:
+        abort(404)
+    if commande["statut"] == "payee":
+        return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
+
+    nom_carte = request.form.get("nom_carte", "").strip()
+    numero = request.form.get("numero_carte", "").replace(" ", "")
+    expiration = request.form.get("expiration", "").strip()
+    cvv = request.form.get("cvv", "").strip()
+
+    erreur = valider_carte(nom_carte, numero, expiration, cvv)
+    if erreur:
+        return render_template("restauration/paiement.jinja",
+                               commande=commande, erreur=erreur, nom_carte=nom_carte)
+
+    with bd.creer_connexion() as conn:
+        bd.payer_commande(conn, id_commande, id_utilisateur)
+
+    return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))

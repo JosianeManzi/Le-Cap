@@ -3,46 +3,82 @@
 {% block titre %}Restauration{% endblock %}
 
 {% block contenu %}
-<div class="page-inscription container">
-
+<div class="container pt-5">
     <div class="mb-5 text-center">
-        <h1 class="fw-bold">Notre restaurant</h1>
         <p class="text-muted">Une cuisine raffinée, préparée avec des produits locaux.</p>
     </div>
+
     <div class="d-flex justify-content-end mb-4">
-    <a href="{{ url_for('restauration.page_panier') }}" class="btn btn-outline-primary rounded-3">
-        🛒 Mon panier ({{ nb_articles }})
-    </a>
+        <a href="{{ url_for('restauration.page_panier') }}" class="btn btn-outline-primary rounded-3">
+            🛒 Mon panier ({{ nb_articles }})
+        </a>
+    </div>
+</div>
+<video class="w-100 d-block" style="height: 50vh; object-fit: cover;" autoplay muted loop playsinline preload="auto">
+    <source src="{{ url_for('static', filename='video/presentation.mp4') }}" type="video/mp4">
+</video>
+
+
+
+{% for cle, titre, icone in categories %}
+<section class="py-5" <div class="container">
+
+    <div class="text-center mb-5">
+    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+         style="width: 76px; height: 76px; border: 1.5px solid #b88a00; color: #b88a00; background: rgba(0, 0, 0, 0.35);">
+
+        {% if cle == 'petit-dejeuner' %}
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/>
+            <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/>
+        </svg>
+
+        {% elif cle == 'dejeuner' %}
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
+            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+        </svg>
+
+        {% else %}
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/>
+            <path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/>
+        </svg>
+        {% endif %}
+    </div>
+
+    <h2 class="fw-bold text-white mb-0">{{ titre }}</h2>
 </div>
 
-    {% for cle, titre, icone in categories %}
-    <section class="mb-5">
-        <h2 class="fw-bold mb-4 text-center">
-            <span class="me-2">{{ icone }}</span>{{ titre }}
-        </h2>
+    <div class="row g-4 justify-content-center">
+        {% for plat in plats_par_categorie[cle] %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden">
 
-        <div class="row g-4 justify-content-center">
-            {% for plat in plats_par_categorie[cle] %}
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card border-0 shadow-lg rounded-4 h-100">
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h4 class="fw-bold">{{ plat.nom }}</h4>
-                        <p class="text-muted flex-grow-1">{{ plat.description }}</p>
-                        <p class="fw-semibold fs-5 mb-3">{{ '%.2f'|format(plat.prix) }} $</p>
-                        <form method="post" action="{{ url_for('restauration.ajouter_au_panier', id_plat=plat.id) }}">
-                            <button type="submit" class="btn btn-primary rounded-3 w-100">Ajouter au panier</button>
-                        </form>
-                    </div>
+                <div class="text-white d-flex flex-column justify-content-end p-4 flex-grow-1"
+                    style="min-height: 320px; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{{ url_for('static', filename='img/' ~ cle ~ '-' ~ loop.index ~ '.jpg') }}') center / cover no-repeat;">
+                    <h4 class="fw-bold">{{ plat.nom }}</h4>
+                    <p class="mb-2">{{ plat.description }}</p>
+                    <p class="fw-semibold fs-5 mb-0">{{ '%.2f'|format(plat.prix) }} $</p>
                 </div>
-            </div>
-            {% else %}
-            <p class="text-center text-muted">Aucun plat disponible pour le moment.</p>
-            {% endfor %}
-        </div>
-    </section>
-    {% endfor %}
 
-</div>
+                <div class="card-body p-3 flex-grow-0">
+                    <form method="post" action="{{ url_for('restauration.ajouter_au_panier', id_plat=plat.id) }}">
+                        <button type="submit" class="btn btn-primary rounded-3 w-100">Ajouter au panier</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-white">Aucun plat disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+
+    </div>
+</section>
+{% endfor %}
+
 {% endblock %}
 
 {% block scripts %}

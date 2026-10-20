@@ -15,7 +15,8 @@
                 <div class="card-body p-4">
 
                     {% for ligne in lignes %}
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 py-3 {% if not loop.last %}border-bottom{% endif %}">
+                    <div
+                        class="d-flex flex-wrap align-items-center justify-content-between gap-3 py-3 {% if not loop.last %}border-bottom{% endif %}">
 
                         <div>
                             <h5 class="fw-bold mb-1">{{ ligne.plat.nom }}</h5>
@@ -23,21 +24,25 @@
                         </div>
 
                         <div class="d-flex align-items-center gap-2">
-                            <form method="post" action="{{ url_for('restauration.modifier_panier', id_plat=ligne.plat.id) }}">
+                            <form method="post"
+                                action="{{ url_for('restauration.modifier_panier', id_plat=ligne.plat.id) }}">
                                 <input type="hidden" name="action" value="moins">
                                 <button type="submit" class="btn btn-outline-primary btn-sm px-3">−</button>
                             </form>
 
                             <span class="fw-semibold px-2">{{ ligne.quantite }}</span>
 
-                            <form method="post" action="{{ url_for('restauration.modifier_panier', id_plat=ligne.plat.id) }}">
+                            <form method="post"
+                                action="{{ url_for('restauration.modifier_panier', id_plat=ligne.plat.id) }}">
                                 <input type="hidden" name="action" value="plus">
                                 <button type="submit" class="btn btn-outline-primary btn-sm px-3">+</button>
                             </form>
 
-                            <span class="fw-semibold ms-3 text-end" style="min-width: 80px;">{{ '%.2f'|format(ligne.sous_total) }} $</span>
+                            <span class="fw-semibold ms-3 text-end" style="min-width: 80px;">{{
+                                '%.2f'|format(ligne.sous_total) }} $</span>
 
-                            <form method="post" action="{{ url_for('restauration.modifier_panier', id_plat=ligne.plat.id) }}">
+                            <form method="post"
+                                action="{{ url_for('restauration.modifier_panier', id_plat=ligne.plat.id) }}">
                                 <input type="hidden" name="action" value="retirer">
                                 <button type="submit" class="btn btn-outline-danger btn-sm ms-2">Retirer</button>
                             </form>
@@ -53,10 +58,15 @@
 
                 </div>
             </div>
-
+            {% if not session.get('id_utilisateur') %}
+            <p class="text-muted text-center mt-4 mb-0">Vous devez être connecté pour commander.</p>
+            {% endif %}
             <div class="d-flex flex-wrap justify-content-between gap-3 mt-4">
-                <a href="{{ url_for('restauration.page_menu') }}" class="btn btn-outline-primary rounded-3">Continuer mes achats</a>
-                <a href="#" class="btn btn-primary rounded-3 px-5">Commander</a>
+                <a href="{{ url_for('restauration.page_menu') }}" class="btn btn-outline-primary rounded-3">Continuer
+                    mes achats</a>
+                <form method="post" action="{{ url_for('restauration.commander') }}">
+                    <button type="submit" class="btn btn-primary rounded-3 px-5">Commander</button>
+                </form>
             </div>
 
         </div>
