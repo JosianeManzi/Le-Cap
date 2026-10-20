@@ -5,50 +5,73 @@
 {% block contenu %}
 <div class="container pt-5">
     <div class="mb-5 text-center">
-        <p class="text-muted">Une cuisine raffinée, préparée avec des produits locaux.</p>
+        <p class="text-uppercase mb-2" style="color: #b88a00; letter-spacing: 0.35em; font-size: 0.9rem;">
+            Restaurant de l'hôtel
+        </p>
+
+        <h1 class="display-3 fw-bold text-white mb-3"
+            style="font-family: Georgia, 'Times New Roman', serif; letter-spacing: 0.04em;">
+            Notre restaurant
+        </h1>
+
+        <div class="mx-auto mb-4" style="width: 90px; height: 3px; background: #b88a00;"></div>
+
+        <p class="fs-4 fst-italic text-white-50 mx-auto mb-0" style="max-width: 640px;">
+            Une cuisine raffinée, préparée avec des produits locaux.
+        </p>
     </div>
 
-    <div class="d-flex justify-content-end mb-4">
-        <a href="{{ url_for('restauration.page_panier') }}" class="btn btn-outline-primary rounded-3">
-            🛒 Mon panier ({{ nb_articles }})
-        </a>
-    </div>
 </div>
 <video class="w-100 d-block" style="height: 50vh; object-fit: cover;" autoplay muted loop playsinline preload="auto">
     <source src="{{ url_for('static', filename='video/presentation.mp4') }}" type="video/mp4">
 </video>
 
+<div class="d-flex justify-content-end mt-4 mb-4 px-4">
+    <a href="{{ url_for('restauration.page_panier') }}" class="btn btn-outline-primary rounded-3">
+        🛒 Mon panier ({{ nb_articles }})
+    </a>
+</div>
 
 
 {% for cle, titre, icone in categories %}
 <section class="py-5" <div class="container">
 
     <div class="text-center mb-5">
-    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
-         style="width: 76px; height: 76px; border: 1.5px solid #b88a00; color: #b88a00; background: rgba(0, 0, 0, 0.35);">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+            style="width: 76px; height: 76px; border: 1.5px solid #b88a00; color: #b88a00; background: rgba(0, 0, 0, 0.35);">
 
-        {% if cle == 'petit-dejeuner' %}
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/>
-            <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/>
-        </svg>
+            {% if cle == 'petit-dejeuner' %}
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 2v2" />
+                <path d="M14 2v2" />
+                <path d="M6 2v2" />
+                <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" />
+            </svg>
 
-        {% elif cle == 'dejeuner' %}
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
-            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
-        </svg>
+            {% elif cle == 'dejeuner' %}
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                <path d="M7 2v20" />
+                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+            </svg>
 
-        {% else %}
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/>
-            <path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/>
-        </svg>
-        {% endif %}
+            {% else %}
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 22h8" />
+                <path d="M7 10h10" />
+                <path d="M12 15v7" />
+                <path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z" />
+            </svg>
+            {% endif %}
+        </div>
+
+        <h2 class="display-5 fw-bold text-white mb-3"
+            style="font-family: Georgia, 'Times New Roman', serif; letter-spacing: 0.04em;">{{ titre }}</h2>
+        <div class="mx-auto" style="width: 70px; height: 3px; background: #b88a00;"></div>
     </div>
-
-    <h2 class="fw-bold text-white mb-0">{{ titre }}</h2>
-</div>
 
     <div class="row g-4 justify-content-center">
         {% for plat in plats_par_categorie[cle] %}
