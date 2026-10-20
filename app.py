@@ -4,6 +4,7 @@ import os
 from routes_compte import bp_compte
 from routes_chambres import bp_chambres
 from routes_restauration import bp_restauration
+from routes_services import bp_services
 
 if not os.getenv("DB_USER"):
     load_dotenv(".env")
@@ -13,6 +14,7 @@ app.secret_key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 app.register_blueprint(bp_compte, url_prefix="/compte")
 app.register_blueprint(bp_chambres, url_prefix="/chambres")
 app.register_blueprint(bp_restauration, url_prefix="/restauration")
+app.register_blueprint(bp_services, url_prefix="/services")
 
 @app.route("/")
 def accueil():
