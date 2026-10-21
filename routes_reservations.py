@@ -12,12 +12,12 @@ def reserver():
     return render_template("reservations/navigation.jinja", arrivee=arrivee, depart=depart, clients=clients)
 
 
-@bp_reservations.route("/chambres", methods=["POST"])
+@bp_reservations.route("/chambres", methods=["GET", "POST"])
 def liste():
-    arrivee = request.form.get("arrivee", "")
-    depart = request.form.get("depart", "")
-    clients = request.form.get("clients", 1,type=int)
-    type_chambre = request.form.get("type_chambre", "") 
+    arrivee = request.values.get("arrivee", "")
+    depart = request.values.get("depart", "")
+    clients = request.values.get("clients", 1, type=int)
+    type_chambre = request.values.get("type_chambre", "")
 
     def retour(message):
         flash(message, "erreur")
@@ -38,18 +38,22 @@ def liste():
             chambres = bd.obtenir_liste_chambres(conn, arrivee, depart, clients, type_chambre)
     except Exception:
         return retour("Erreur serveur.")
-    return render_template("reservations/chambres.jinja",chambres=chambres,arrivee=arrivee,depart=depart,clients=clients,
-    )
+    return render_template("reservations/chambres.jinja", chambres=chambres, arrivee=arrivee, depart=depart, clients=clients, type_chambre=type_chambre)
+
 @bp_reservations.route("/reservations")
 def reservations():
-    if "id_utilisateur" not in session:
-        flash("Connectez-vous pour réserver.", "erreur")
-        return redirect(url_for("compte.page_connexion"))
-
     id_chambre = request.args.get("id_chambre", type=int)
     arrivee = request.args.get("arrivee", "")
     depart = request.args.get("depart", "")
     clients = request.args.get("clients", 1, type=int)
+    type_chambre = request.args.get("type_chambre", "")
+
+    if "id_utilisateur" not in session:
+        session["apres_connexion"] = url_for(
+            "reservations.liste", arrivee=arrivee, depart=depart,
+            clients=clients, type_chambre=type_chambre)
+        flash("Connectez-vous pour réserver.", "erreur")
+        return redirect(url_for("compte.page_connexion"))
     try:
         with bd.creer_connexion() as conn:
             bd.ajouter_reservation(conn, session["id_utilisateur"], id_chambre, arrivee, depart)

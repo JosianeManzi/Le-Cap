@@ -71,7 +71,7 @@ def connexion():
     try:
         with bd.creer_connexion() as conn:
             utilisateur = bd.chercher_utilisateur(conn, courriel, mot_de_passe_hache)
-    except Exception as e:
+    except Exception:
         flash("Erreur serveur, veuillez réessayer.")
         return redirect(url_for("compte.page_connexion"))
 
@@ -82,6 +82,10 @@ def connexion():
     session["id_utilisateur"] = utilisateur["id"]
     session["nom"] = utilisateur["nom"]
     session["est_admin"] = bool(utilisateur["est_admin"])
+
+    chambre = session.pop("apres_connexion", None)
+    if chambre and not session["est_admin"]:
+        return redirect(chambre)
     return redirect(url_for("compte.page_utilisateur"))
 
 @bp_compte.route("/comptes/utilisateur")
