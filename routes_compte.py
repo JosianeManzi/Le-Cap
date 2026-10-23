@@ -71,7 +71,7 @@ def connexion():
     try:
         with bd.creer_connexion() as conn:
             utilisateur = bd.chercher_utilisateur(conn, courriel, mot_de_passe_hache)
-    except Exception as e:
+    except Exception:
         flash("Erreur serveur, veuillez réessayer.")
         return redirect(url_for("compte.page_connexion"))
 
@@ -82,7 +82,10 @@ def connexion():
     session["id_utilisateur"] = utilisateur["id"]
     session["nom"] = utilisateur["nom"]
     session["est_admin"] = bool(utilisateur["est_admin"])
-    flash("Connexion réussie.")
+
+    chambre = session.pop("apres_connexion", None)
+    if chambre and not session["est_admin"]:
+        return redirect(chambre)
     return redirect(url_for("compte.page_utilisateur"))
 
 @bp_compte.route("/comptes/utilisateur")
@@ -93,17 +96,18 @@ def page_utilisateur():
 
     with bd.creer_connexion() as conn:
         utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
+        reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
+
 
     if session.get("est_admin"):
         return render_template("admin/tableau_bord.jinja", utilisateur=utilisateur)
 
-    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur)
+    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur, reservations=reservations)
 
 @bp_compte.route('/deconnexion')
 def deconnexion():
     nom = session.get('nom')
     session.clear()
-    flash(f"{nom} a été déconnecté avec succès.", "info")
     return redirect(url_for('compte.page_connexion'))
 
 @bp_compte.route("/creer_admin", methods=["POST"])

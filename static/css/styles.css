@@ -1,22 +1,111 @@
-html, body {
-  height: 100%;
+html,
+body {
+    height: 100%;
 }
 
 body {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 main {
-  flex: 1;
-  padding: 40px 0;
+    flex: 1;
+    padding: 40px 0;
 }
 
 footer {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
 }
+
 body {
     padding-bottom: 160px;
 }
 
+.shadow-dark {
+    box-shadow: 0 0px 60px rgba(255, 255, 255, 0.35);
+}
+
+.color {
+    background-color: #a4c8f7;
+}
+
+.search-bar {
+    color: #e6f1f3;
+}
+
+.search-bar .pill {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50rem;
+    backdrop-filter: blur(6px);
+}
+
+.search-bar .pill:focus-within {
+    border-color: #5fd3c4;
+}
+
+.search-bar .form-control {
+    background: transparent;
+    border: 0;
+    color: #e6f1f3;
+    color-scheme: dark;
+}
+
+.search-bar .date-placeholder {
+    color: rgba(10, 233, 237, 0.456);
+}
+
+.search-bar .btn-search {
+    background: #5fd3c4;
+    color: #012a33;
+    font-weight: 600;
+}
+
+.search-bar .btn-search:hover {
+    background: #86e3d6;
+}
+
+.room-card {
+    transition: transform, .2s;
+}
+
+.room-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgb(5, 209, 240);
+}
+
+.room-photo img {
+    transition: transform .4s;
+}
+
+.room-card:hover .room-photo img {
+    transform: scale(1.05);
+}
+
+.search-bar {
+    border-radius: 50rem !important;
+}
+
+.service-card {
+    position: relative;
+    height: 460px;
+    border-radius: 50rem;
+    overflow: hidden;
+    box-shadow: 0 15px 35px black;
+}
+
+.service-card img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+}
+
+.service-caption {
+    position: relative;
+    padding: 1rem 1rem 5rem;
+    color: #fff;
+    text-align: center;
+    box-shadow: inset 0 60px 50px -50px rgb(19, 20, 20);
+
+}

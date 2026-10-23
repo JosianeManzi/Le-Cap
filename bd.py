@@ -161,3 +161,24 @@ def payer_commande(conn, id_commande, id_utilisateur):
             (id_commande, id_utilisateur)
         )
         return curseur.rowcount
+def obtenir_liste_chambres(conn, arrivee, depart, clients, type_chambre=""):
+    with conn.get_curseur() as curseur:
+        curseur.execute("""SELECT c.* FROM chambres c WHERE c.disponible = 1 AND c.nb_personnes >= %s
+              AND NOT EXISTS ( SELECT 1 FROM reservations r WHERE r.chambre_id = c.id
+              AND r.date_arrivee < %s AND r.date_depart > %s )
+              AND (%s = '' OR c.type_chambre = %s) ORDER BY c.prix_nuit """,
+            (clients, depart, arrivee, type_chambre, type_chambre),
+        )
+        return curseur.fetchall()
+
+def ajouter_reservation(conn, id_utilisateur, id_chambre, arrivee, depart):
+    with conn.get_curseur() as curseur:
+        curseur.execute(""" INSERT INTO reservations (utilisateur_id, chambre_id, date_arrivee, date_depart)
+            VALUES (%s, %s, %s, %s) """
+            , (id_utilisateur, id_chambre, arrivee, depart))
+
+def obtenir_reservations_utilisateur(conn, id_utilisateur):
+    with conn.get_curseur() as curseur:
+        curseur.execute(""" SELECT * FROM reservations r JOIN chambres c ON c.id = r.chambre_id
+            WHERE r.utilisateur_id = %s ORDER BY r.date_arrivee DESC """, (id_utilisateur,))
+        return curseur.fetchall()
