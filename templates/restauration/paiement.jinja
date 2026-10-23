@@ -30,7 +30,7 @@
                     <div class="alert alert-danger">{{ erreur }}</div>
                     {% endif %}
 
-                    <form method="post" action="{{ url_for('restauration.payer', id_commande=commande.id) }}">
+                    <form method="post" action="{{ url_for('restauration.payer', id_commande=commande.id) }}" novalidate>
 
                         <div class="mb-3">
                             <label for="nom_carte" class="form-label">Nom sur la carte</label>
