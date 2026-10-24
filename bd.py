@@ -115,3 +115,12 @@ def obtenir_reservations_utilisateur(conn, id_utilisateur):
         curseur.execute(""" SELECT * FROM reservations r JOIN chambres c ON c.id = r.chambre_id
             WHERE r.utilisateur_id = %s ORDER BY r.date_arrivee DESC """, (id_utilisateur,))
         return curseur.fetchall()
+
+def annuler_reservation(conn, id_reservation, id_utilisateur):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """DELETE FROM reservations
+               WHERE id = %s AND utilisateur_id = %s""",
+            (id_reservation, id_utilisateur),
+        )
+        return curseur.rowcount > 0
