@@ -95,6 +95,7 @@ def page_utilisateur():
         return redirect(url_for("compte.page_connexion"))
 
     with bd.creer_connexion() as conn:
+        bd.supprimer_reservations_passees(conn)
         utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
         reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
 

@@ -112,8 +112,9 @@ def ajouter_reservation(conn, id_utilisateur, id_chambre, arrivee, depart):
 
 def obtenir_reservations_utilisateur(conn, id_utilisateur):
     with conn.get_curseur() as curseur:
-        curseur.execute(""" SELECT * FROM reservations r JOIN chambres c ON c.id = r.chambre_id
-            WHERE r.utilisateur_id = %s ORDER BY r.date_arrivee DESC """, (id_utilisateur,))
+        curseur.execute(""" SELECT r.id AS id, c.type_chambre, c.prix_nuit, r.date_arrivee, r.date_depart
+               FROM reservations r JOIN chambres c ON c.id = r.chambre_id
+               WHERE r.utilisateur_id = %s """, (id_utilisateur,))
         return curseur.fetchall()
 
 def annuler_reservation(conn, id_reservation, id_utilisateur):
@@ -124,3 +125,11 @@ def annuler_reservation(conn, id_reservation, id_utilisateur):
             (id_reservation, id_utilisateur),
         )
         return curseur.rowcount > 0
+
+def supprimer_reservations_passees(conn):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """DELETE FROM reservations
+               WHERE date_depart < CURDATE()"""
+        )
+        return curseur.rowcount
