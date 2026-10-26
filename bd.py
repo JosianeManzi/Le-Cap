@@ -182,3 +182,27 @@ def obtenir_reservations_utilisateur(conn, id_utilisateur):
         curseur.execute(""" SELECT * FROM reservations r JOIN chambres c ON c.id = r.chambre_id
             WHERE r.utilisateur_id = %s ORDER BY r.date_arrivee DESC """, (id_utilisateur,))
         return curseur.fetchall()
+
+
+def obtenir_tous_les_plats(conn):
+    """Tous les plats, y compris ceux retirés du menu (pour l'admin)"""
+    with conn.get_curseur() as curseur:
+        curseur.execute("SELECT * FROM plats ORDER BY categorie, nom")
+        return curseur.fetchall()
+
+
+def ajouter_plat(conn, nom, description, prix, categorie):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "INSERT INTO plats (nom, description, prix, categorie) VALUES (%s, %s, %s, %s)",
+            (nom, description, prix, categorie)
+        )
+
+
+def basculer_disponibilite_plat(conn, id_plat):
+    """Retire le plat du menu s'il y est, le remet sinon"""
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "UPDATE plats SET disponible = 1 - disponible WHERE id = %s",
+            (id_plat,)
+        )

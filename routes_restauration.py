@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, abort
+from flask import Blueprint, render_template, session, redirect, url_for, request, abort,flash
 import bd
 from datetime import date
 
@@ -188,3 +188,63 @@ def payer(id_commande):
         bd.payer_commande(conn, id_commande, id_utilisateur)
 
     return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
+
+
+
+def admin_requis():
+    """Refuse l'accès (403) si l'utilisateur n'est pas administrateur"""
+    if not session.get("est_admin"):
+        abort(403)
+
+
+@bp_restauration.route("/admin", methods=["GET"])
+def page_admin_menu():
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        plats = bd.obtenir_tous_les_plats(conn)
+
+    plats_par_categorie = {cle: [] for cle, _, _ in CATEGORIES}
+    for plat in plats:
+        plats_par_categorie[plat["categorie"]].append(plat)
+
+    return render_template("restauration/admin_menu.jinja",
+                           categories=CATEGORIES,
+                           plats_par_categorie=plats_par_categorie)
+
+
+@bp_restauration.route("/admin/ajouter", methods=["POST"])
+
+def ajouter_plat_menu():
+    admin_requis()
+    nom = request.form.get("nom", "").strip()
+    description = request.form.get("description", "").strip()
+    categorie = request.form.get("categorie", "")
+
+    try:
+        prix = round(float(request.form.get("prix", "").replace(",", ".")), 2)
+    except ValueError:
+        prix = 0
+
+    if not nom or not description:
+        flash("Le nom et la description sont obligatoires.", "danger")
+    elif len(nom) > 100:
+        flash("Le nom ne peut pas dépasser 100 caractères.", "danger")
+    elif categorie not in [cle for cle, _, _ in CATEGORIES]:
+        flash("Catégorie invalide.", "danger")
+    elif not 0 < prix <= 500:
+        flash("Le prix doit être entre 0,01 $ et 500 $.", "danger")
+    else:
+        with bd.creer_connexion() as conn:
+            bd.ajouter_plat(conn, nom, description, prix, categorie)
+        flash(f"« {nom} » a été ajouté au menu.", "success")
+
+    return redirect(url_for("restauration.page_admin_menu"))
+
+
+@bp_restauration.route("/admin/basculer/<int:id_plat>", methods=["POST"])
+
+def basculer_plat(id_plat):
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        bd.basculer_disponibilite_plat(conn, id_plat)
+    return redirect(url_for("restauration.page_admin_menu"))
