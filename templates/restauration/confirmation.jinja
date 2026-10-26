@@ -1,0 +1,52 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Commande #{{ commande.id }}{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="text-center mb-4">
+                <div class="fs-1 mb-2">✅</div>
+                <h1 class="fw-bold">Commande #{{ commande.id }} enregistrée</h1>
+                {% if commande.statut == 'payee' %}
+                <span class="badge bg-success">Payée</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">En attente de paiement</span>
+                {% endif %}
+            </div>
+
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4">
+
+                    {% for ligne in commande.lignes %}
+                    <div class="d-flex justify-content-between py-2 {% if not loop.last %}border-bottom{% endif %}">
+                        <span>{{ ligne.quantite }} × {{ ligne.nom }}</span>
+                        <span class="fw-semibold">{{ '%.2f'|format(ligne.quantite * ligne.prix_unitaire) }} $</span>
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-flex justify-content-between pt-4">
+                        <h4 class="fw-bold">Total</h4>
+                        <h4 class="fw-bold">{{ '%.2f'|format(commande.total) }} $</h4>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-between gap-3 mt-4">
+                <a href="{{ url_for('restauration.page_menu') }}" class="btn btn-outline-primary rounded-3">Retour au
+                    menu</a>
+                {% if commande.statut != 'payee' %}
+                <a href="{{ url_for('restauration.page_paiement', id_commande=commande.id) }}"
+                    class="btn btn-primary rounded-3 px-5">Payer</a> {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
