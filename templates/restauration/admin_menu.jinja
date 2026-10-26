@@ -20,30 +20,38 @@
         <div class="card-body p-4">
             <h4 class="fw-bold mb-3">Ajouter un plat</h4>
 
-            <form method="post" action="{{ url_for('restauration.ajouter_plat_menu') }}">
+            <form method="post" action="{{ url_for('restauration.ajouter_plat_menu') }}" enctype="multipart/form-data" novalidate>
                 <div class="row g-3">
                     <div class="col-12 col-md-6">
                         <label for="nom" class="form-label">Nom du plat</label>
-                        <input type="text" class="form-control" id="nom" name="nom" maxlength="100" required>
+                        <input type="text" class="form-control" id="nom" name="nom" maxlength="100"
+                               value="{{ nom }}" required>
                     </div>
 
                     <div class="col-6 col-md-3">
                         <label for="prix" class="form-label">Prix ($)</label>
-                        <input type="number" class="form-control" id="prix" name="prix" step="0.01" min="0.01" max="500" required>
+                        <input type="number" class="form-control" id="prix" name="prix" step="0.01" min="0.01" max="500"
+                               value="{{ prix }}" required>
                     </div>
 
                     <div class="col-6 col-md-3">
                         <label for="categorie" class="form-label">Repas</label>
                         <select class="form-select" id="categorie" name="categorie" required>
                             {% for cle, titre, icone in categories %}
-                            <option value="{{ cle }}">{{ titre }}</option>
+                            <option value="{{ cle }}" {% if categorie == cle %}selected{% endif %}>{{ titre }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     <div class="col-12">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
+                        <textarea class="form-control" id="description" name="description" rows="2" required>{{ description }}</textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="image" class="form-label">Image du plat</label>
+                        <input type="file" class="form-control" id="image" name="image"
+                               accept="image/png, image/jpeg, image/webp" required>
                     </div>
 
                     <div class="col-12">
@@ -61,14 +69,24 @@
 
             {% for plat in plats_par_categorie[cle] %}
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 py-3 {% if not loop.last %}border-bottom{% endif %}">
-                <div>
-                    <span class="fw-semibold">{{ plat.nom }}</span>
-                    <span class="text-muted ms-2">{{ '%.2f'|format(plat.prix) }} $</span>
-                    {% if plat.disponible %}
-                    <span class="badge bg-success ms-2">Au menu</span>
-                    {% else %}
-                    <span class="badge bg-secondary ms-2">Retiré</span>
+
+                <div class="d-flex align-items-center gap-3">
+                    {% if plat.image %}
+                    <img src="{{ url_for('static', filename='img/' ~ plat.image) }}"
+                         alt="{{ plat.nom }}"
+                         class="rounded-3"
+                         style="width: 64px; height: 64px; object-fit: cover;">
                     {% endif %}
+
+                    <div>
+                        <span class="fw-semibold">{{ plat.nom }}</span>
+                        <span class="text-muted ms-2">{{ '%.2f'|format(plat.prix) }} $</span>
+                        {% if plat.disponible %}
+                        <span class="badge bg-success ms-2">Au menu</span>
+                        {% else %}
+                        <span class="badge bg-secondary ms-2">Retiré</span>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <form method="post" action="{{ url_for('restauration.basculer_plat', id_plat=plat.id) }}">

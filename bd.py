@@ -191,13 +191,12 @@ def obtenir_tous_les_plats(conn):
         return curseur.fetchall()
 
 
-def ajouter_plat(conn, nom, description, prix, categorie):
+def ajouter_plat(conn, nom, description, prix, categorie, image=None):
     with conn.get_curseur() as curseur:
         curseur.execute(
-            "INSERT INTO plats (nom, description, prix, categorie) VALUES (%s, %s, %s, %s)",
-            (nom, description, prix, categorie)
+            "INSERT INTO plats (nom, description, prix, categorie, image) VALUES (%s, %s, %s, %s, %s)",
+            (nom, description, prix, categorie, image)
         )
-
 
 def basculer_disponibilite_plat(conn, id_plat):
     """Retire le plat du menu s'il y est, le remet sinon"""
