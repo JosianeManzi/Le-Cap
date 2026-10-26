@@ -79,7 +79,7 @@
             <div class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden">
 
                 <div class="text-white d-flex flex-column justify-content-end p-4 flex-grow-1"
-                    style="min-height: 320px; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{{ url_for('static', filename='img/' ~ cle ~ '-' ~ loop.index ~ '.jpg') }}') center / cover no-repeat;">
+                    style="min-height: 320px; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{{ url_for('static', filename='img/' ~ plat.image) }}') center / cover no-repeat;">
                     <h4 class="fw-bold">{{ plat.nom }}</h4>
                     <p class="mb-2">{{ plat.description }}</p>
                     <p class="fw-semibold fs-5 mb-0">{{ '%.2f'|format(plat.prix) }} $</p>
