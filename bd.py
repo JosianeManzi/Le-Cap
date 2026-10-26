@@ -94,6 +94,73 @@ def obtenir_utilisateur(conn, id_utilisateur):
         )
         return curseur.fetchone()
 
+def obtenir_plats(conn):
+    """Retourne tous les plats disponibles, classés par catégorie puis par nom"""
+    with conn.get_curseur() as curseur:
+        curseur.execute("SELECT * FROM plats WHERE disponible = 1 ORDER BY categorie, nom")
+        return curseur.fetchall()
+
+
+def obtenir_plats_par_ids(conn, ids):
+    """Retourne les plats dont l'id est dans la liste"""
+    if not ids:
+        return []
+    marqueurs = ", ".join(["%s"] * len(ids))
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            f"SELECT * FROM plats WHERE disponible = 1 AND id IN ({marqueurs}) ORDER BY categorie, nom",
+            tuple(ids)
+        )
+        return curseur.fetchall()
+
+def creer_commande(conn, id_utilisateur, lignes):
+    """lignes : liste de (id_plat, quantite, prix_unitaire). Retourne l'id de la commande."""
+    total = sum(quantite * prix for _, quantite, prix in lignes)
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "INSERT INTO commandes (id_utilisateur, total) VALUES (%s, %s)",
+            (id_utilisateur, total)
+        )
+        id_commande = curseur.lastrowid
+        for id_plat, quantite, prix in lignes:
+            curseur.execute(
+                """INSERT INTO commande_plats (id_commande, id_plat, quantite, prix_unitaire)
+                   VALUES (%s, %s, %s, %s)""",
+                (id_commande, id_plat, quantite, prix)
+            )
+    return id_commande
+
+
+def obtenir_commande(conn, id_commande, id_utilisateur):
+    """Retourne la commande avec ses lignes, seulement si elle appartient à cet utilisateur"""
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT * FROM commandes WHERE id = %s AND id_utilisateur = %s",
+            (id_commande, id_utilisateur)
+        )
+        commande = curseur.fetchone()
+        if not commande:
+            return None
+        curseur.execute(
+            """SELECT cp.quantite, cp.prix_unitaire, p.nom
+               FROM commande_plats cp
+               JOIN plats p ON p.id = cp.id_plat
+               WHERE cp.id_commande = %s""",
+            (id_commande,)
+        )
+        commande["lignes"] = curseur.fetchall()
+        return commande
+
+
+def payer_commande(conn, id_commande, id_utilisateur):
+    """Passe la commande à 'payee'. Retourne le nombre de lignes modifiées (0 ou 1)."""
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """UPDATE commandes SET statut = 'payee'
+               WHERE id = %s AND id_utilisateur = %s AND statut = 'en_attente'""",
+            (id_commande, id_utilisateur)
+        )
+        return curseur.rowcount
 def obtenir_liste_chambres(conn, arrivee, depart, clients, type_chambre=""):
     with conn.get_curseur() as curseur:
         curseur.execute("""SELECT c.* FROM chambres c WHERE c.disponible = 1 AND c.nb_personnes >= %s
