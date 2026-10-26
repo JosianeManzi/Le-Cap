@@ -11,12 +11,12 @@
 
     <div class="mb-5 text-center">
         <h1 class="fw-bold">Espace Administrateur</h1>
-        <p class="text-muted">Gérez les chambres, les réservations et les clients du Le-Cap</p>
+        <p class="text-muted">Gérez les chambres, les réservations, le restaurant et les clients du Le-Cap</p>
     </div>
 
     <div class="row g-4 justify-content-center">
 
-        <div class="col-12 col-md-6 col-lg-4">
+        <div class="col-12 col-md-6 col-lg-3">
             <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
                 <div class="card-body p-4">
                     <div class="fs-1 mb-3">🛏️</div>
@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-4">
+        <div class="col-12 col-md-6 col-lg-3">
             <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
                 <div class="card-body p-4">
                     <div class="fs-1 mb-3">📋</div>
@@ -43,7 +43,20 @@
             </div>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-4">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="fs-1 mb-3">🍽️</div>
+                    <h4 class="fw-bold">Restauration</h4>
+                    <p class="text-muted">Ajouter ou retirer des plats du menu</p>
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{{ url_for('restauration.page_admin_menu') }}" class="btn btn-outline-primary rounded-3">Gérer le menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
             <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
                 <div class="card-body p-4">
                     <div class="fs-1 mb-3">👥</div>

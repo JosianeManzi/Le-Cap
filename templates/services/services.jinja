@@ -1,0 +1,68 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Services{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+
+    <div class="mb-5 text-center">
+        <h1 class="fw-bold">Nos services</h1>
+        <p class="text-muted">Détendez-vous, mangez bien, restez en forme : tout est réuni sous un même toit.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="fs-1 mb-3">🍽️</div>
+                    <h4 class="fw-bold">Restauration</h4>
+                    <p class="text-muted flex-grow-1">Une cuisine raffinée préparée avec des produits locaux, du
+                        petit-déjeuner au dîner.</p>
+                    <a href="/restauration/" class="btn btn-primary rounded-3 mt-2">Voir le menu</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="fs-1 mb-3">🏋️</div>
+                    <h4 class="fw-bold">Gym</h4>
+                    <p class="text-muted">Une salle d'entraînement moderne pour garder votre rythme, même en voyage.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="fs-1 mb-3">💆</div>
+                    <h4 class="fw-bold">Spa</h4>
+                    <p class="text-muted">Massages et soins pour relâcher les tensions et retrouver l'équilibre.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card border-0 shadow-lg rounded-4 h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="fs-1 mb-3">🏊</div>
+                    <h4 class="fw-bold">Piscine</h4>
+                    <p class="text-muted">Une piscine chauffée pour nager le matin ou vous détendre en fin de journée.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{{ url_for('chambres.page_liste_chambres') }}" class="btn btn-primary btn-lg rounded-3 px-5">Découvrir
+            nos chambres</a>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
