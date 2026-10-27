@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, abort
+from flask import Blueprint, render_template, session, redirect, url_for, request, abort,flash
 import bd
 from datetime import date
-
+from werkzeug.utils import secure_filename
+import uuid
+import os
+EXTENSIONS_IMAGE = {"png", "jpg", "jpeg", "webp"}
 bp_restauration = Blueprint("restauration", __name__)
 
 CATEGORIES = [
@@ -188,3 +191,76 @@ def payer(id_commande):
         bd.payer_commande(conn, id_commande, id_utilisateur)
 
     return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
+
+
+
+def admin_requis():
+    """Refuse l'accès (403) si l'utilisateur n'est pas administrateur"""
+    if not session.get("est_admin"):
+        abort(403)
+
+
+@bp_restauration.route("/admin", methods=["GET"])
+def page_admin_menu():
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        plats = bd.obtenir_tous_les_plats(conn)
+
+    plats_par_categorie = {cle: [] for cle, _, _ in CATEGORIES}
+    for plat in plats:
+        plats_par_categorie[plat["categorie"]].append(plat)
+
+    return render_template("restauration/admin_menu.jinja",categories=CATEGORIES, plats_par_categorie=plats_par_categorie,
+    nom=session.pop("nom", ""),prix=session.pop("prix", ""), categorie=session.pop("categorie", ""),
+    description=session.pop("description", ""))
+
+
+@bp_restauration.route("/admin/ajouter", methods=["POST"])
+def ajouter_plat_menu():
+    admin_requis()
+    nom = request.form.get("nom", "").strip()
+    description = request.form.get("description", "").strip()
+    categorie = request.form.get("categorie", "")
+    fichier_image = request.files.get("image")
+
+    try:
+        prix = round(float(request.form.get("prix", "").replace(",", ".")), 2)
+    except ValueError:
+        prix = 0
+
+    if not nom or not description:
+        flash("Le nom et la description sont obligatoires.", "danger")
+    elif len(nom) > 100:
+        flash("Le nom ne peut pas dépasser 100 caractères.", "danger")
+    elif categorie not in [cle for cle, _, _ in CATEGORIES]:
+        flash("Catégorie invalide.", "danger")
+    elif not 0 < prix <= 500:
+        flash("Le prix doit être entre 0,01 $ et 500 $.", "danger")
+    elif not fichier_image or not fichier_image.filename:
+        flash("L'image est obligatoire.", "danger")
+    elif fichier_image.filename.rsplit(".", 1)[-1].lower() not in EXTENSIONS_IMAGE:
+        flash("Format d'image non accepté (png, jpg, jpeg ou webp).", "danger")
+    else:
+        nom_image = f"{uuid.uuid4().hex[:8]}_{secure_filename(fichier_image.filename)}"
+        os.makedirs(os.path.join("static", "img"), exist_ok=True)
+        fichier_image.save(os.path.join("static", "img", nom_image))
+
+        with bd.creer_connexion() as conn:
+            bd.ajouter_plat(conn, nom, description, prix, categorie, nom_image)
+        flash(f"« {nom} » a été ajouté au menu.", "success")
+        return redirect(url_for("restauration.page_admin_menu"))
+
+    session["nom"] = nom
+    session["prix"] = request.form.get("prix", "")
+    session["categorie"] = categorie
+    session["description"] = description
+    return redirect(url_for("restauration.page_admin_menu"))
+
+
+@bp_restauration.route("/admin/basculer/<int:id_plat>", methods=["POST"])
+
+def basculer_plat(id_plat):
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        bd.basculer_disponibilite_plat(conn, id_plat)
+    return redirect(url_for("restauration.page_admin_menu"))
