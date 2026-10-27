@@ -61,3 +61,16 @@ def reservations():
         return redirect(url_for("reservations.reserver", arrivee=arrivee, depart=depart, clients=clients))
 
     return redirect(url_for("compte.page_utilisateur"))
+
+@bp_reservations.route("/reservations/<int:id_reservation>/annuler", methods=["POST"])
+def annuler(id_reservation):
+    id_utilisateur = session.get("id_utilisateur")
+    with bd.creer_connexion() as conn:
+        annulee = bd.annuler_reservation(conn, id_reservation, id_utilisateur)
+
+    if annulee:
+        flash("Réservation annulée.", "success")
+    else:
+        flash("Impossible d'annuler cette réservation.", "error")
+
+    return redirect(url_for("compte.page_utilisateur"))
