@@ -1,0 +1,82 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Modifier un plat{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="mb-5 text-center">
+                <h1 class="fw-bold">Modifier un plat</h1>
+                <p class="text-muted">{{ plat.nom }}</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for niveau, message in messages %}
+            <div class="alert alert-{{ niveau }}">{{ message }}</div>
+            {% endfor %}
+            {% endwith %}
+
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4">
+
+                    <form method="post" enctype="multipart/form-data"
+                        action="{{ url_for('restauration.modifier_plat_menu', id_plat=plat.id) }}">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label for="nom" class="form-label">Nom du plat</label>
+                                <input type="text" class="form-control" id="nom" name="nom" maxlength="100"
+                                    value="{{ plat.nom }}" required>
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <label for="prix" class="form-label">Prix ($)</label>
+                                <input type="number" class="form-control" id="prix" name="prix" step="0.01" min="0.01"
+                                    max="500" value="{{ plat.prix }}" required>
+                            </div>
+
+                            <div class="col-6 col-md-3">
+                                <label for="categorie" class="form-label">Repas</label>
+                                <select class="form-select" id="categorie" name="categorie" required>
+                                    {% for cle, titre, icone in categories %}
+                                    <option value="{{ cle }}" {% if cle==plat.categorie %}selected{% endif %}>{{ titre
+                                        }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="image" class="form-label">Image du plat</label>
+                                {% if plat.image %}
+                                <div class="mb-2">
+                                    <img src="{{ url_for('static', filename='img/' ~ plat.image) }}"
+                                        alt="{{ plat.nom }}" class="rounded-3" style="max-height: 140px;">
+                                </div>
+                                {% endif %}
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                <div class="form-text">Laissez vide pour garder l'image actuelle.</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                    required>{{ plat.description }}</textarea>
+                            </div>
+
+                            <div class="col-12 d-flex flex-wrap justify-content-between gap-3">
+                                <a href="{{ url_for('restauration.page_admin_menu') }}"
+                                    class="btn btn-outline-primary rounded-3">Annuler</a>
+                                <button type="submit" class="btn btn-primary rounded-3 px-5">Enregistrer</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

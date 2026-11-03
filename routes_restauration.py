@@ -1,11 +1,15 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, abort,flash
+from flask import Blueprint, render_template, session, redirect, url_for, request, abort,flash,current_app
 import bd
 from datetime import date
 from werkzeug.utils import secure_filename
 import uuid
 import os
+from werkzeug.utils import secure_filename
 EXTENSIONS_IMAGE = {"png", "jpg", "jpeg", "webp"}
 bp_restauration = Blueprint("restauration", __name__)
+
+EXTENSIONS_IMAGE = {"jpg", "jpeg", "png", "webp", "gif"}
+
 
 CATEGORIES = [
     ("petit-dejeuner", "Petit-déjeuner", "🥐"),
@@ -194,6 +198,17 @@ def payer(id_commande):
 
 
 
+def enregistrer_image(fichier):
+    """Enregistre l'image dans static/img. Retourne (nom_du_fichier, message_d_erreur)."""
+    nom_original = fichier.filename
+    extension = nom_original.rsplit(".", 1)[-1].lower() if "." in nom_original else ""
+    if extension not in EXTENSIONS_IMAGE:
+        return None, "L'image doit être au format jpg, jpeg, png, webp ou gif."
+
+    nom_fichier = f"{uuid.uuid4().hex[:8]}_{secure_filename(nom_original)[-80:]}"
+    fichier.save(os.path.join(current_app.root_path, "static", "img", nom_fichier))
+    return nom_fichier, None
+
 def admin_requis():
     """Refuse l'accès (403) si l'utilisateur n'est pas administrateur"""
     if not session.get("est_admin"):
@@ -216,6 +231,8 @@ def page_admin_menu():
 
 
 @bp_restauration.route("/admin/ajouter", methods=["POST"])
+
+
 def ajouter_plat_menu():
     admin_requis()
     nom = request.form.get("nom", "").strip()
@@ -263,4 +280,61 @@ def basculer_plat(id_plat):
     admin_requis()
     with bd.creer_connexion() as conn:
         bd.basculer_disponibilite_plat(conn, id_plat)
+    return redirect(url_for("restauration.page_admin_menu"))
+
+@bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["GET"])
+
+
+def page_modifier_plat(id_plat):
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        plat = bd.obtenir_plat(conn, id_plat)
+
+    if not plat:
+        abort(404)
+
+    return render_template("restauration/admin_modifier_plat.jinja",
+                           plat=plat, categories=CATEGORIES)
+
+
+@bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["POST"])
+@bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["POST"])
+
+
+def modifier_plat_menu(id_plat):
+    admin_requis()
+    nom = request.form.get("nom", "").strip()
+    description = request.form.get("description", "").strip()
+    categorie = request.form.get("categorie", "")
+    image = request.files.get("image")
+
+    try:
+        prix = round(float(request.form.get("prix", "").replace(",", ".")), 2)
+    except ValueError:
+        prix = 0
+
+    erreur = None
+    if not nom or not description:
+        erreur = "Le nom et la description sont obligatoires."
+    elif len(nom) > 100:
+        erreur = "Le nom ne peut pas dépasser 100 caractères."
+    elif categorie not in [cle for cle, _, _ in CATEGORIES]:
+        erreur = "Catégorie invalide."
+    elif not 0 < prix <= 500:
+        erreur = "Le prix doit être entre 0,01 $ et 500 $."
+
+    nom_image = None
+    if not erreur and image and image.filename:
+        nom_image, erreur = enregistrer_image(image)
+
+    if erreur:
+        flash(erreur, "danger")
+        return redirect(url_for("restauration.page_modifier_plat", id_plat=id_plat))
+
+    with bd.creer_connexion() as conn:
+        if not bd.obtenir_plat(conn, id_plat):
+            abort(404)
+        bd.modifier_plat(conn, id_plat, nom, description, prix, categorie, nom_image)
+
+    flash(f"« {nom} » a été modifié.", "success")
     return redirect(url_for("restauration.page_admin_menu"))
