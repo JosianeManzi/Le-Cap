@@ -74,3 +74,15 @@ def annuler(id_reservation):
         flash("Impossible d'annuler cette réservation.", "error")
 
     return redirect(url_for("compte.page_utilisateur"))
+
+@bp_reservations.route("/admin/reservations", methods=["GET"])
+def liste_reservations():
+    with bd.creer_connexion() as conn:
+        reservations = bd.liste_reservation(conn)
+    somme = 0
+    for reservation in reservations:
+        nb_nuits = (reservation["date_depart"] - reservation["date_arrivee"]).days
+        total_sejour = reservation["prix_nuit"] * nb_nuits
+        somme += total_sejour
+
+    return render_template("reservations/liste_reservation.jinja", reservations=reservations, somme=somme)

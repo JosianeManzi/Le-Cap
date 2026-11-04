@@ -226,6 +226,10 @@ def supprimer_reservations_passees(conn):
 def liste_reservation(conn):
     with conn.get_curseur() as curseur:
         curseur.execute(
-            """SELECT * FROM reservation"""
+            """SELECT *
+               FROM reservations r
+               JOIN utilisateurs u ON u.id = r.utilisateur_id
+               JOIN chambres c ON c.id = r.chambre_id
+               ORDER BY r.date_arrivee DESC"""
         )
         return curseur.fetchall()
