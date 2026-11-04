@@ -222,3 +222,10 @@ def supprimer_reservations_passees(conn):
                WHERE date_depart < CURDATE()"""
         )
         return curseur.rowcount
+
+def liste_reservation(conn):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """SELECT * FROM reservation"""
+        )
+        return curseur.fetchall()
