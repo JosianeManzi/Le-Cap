@@ -233,3 +233,26 @@ def liste_reservation(conn):
                ORDER BY r.date_arrivee DESC"""
         )
         return curseur.fetchall()
+def obtenir_plat(conn, id_plat):
+    with conn.get_curseur() as curseur:
+        curseur.execute("SELECT * FROM plats WHERE id = %s", (id_plat,))
+        return curseur.fetchone()
+
+
+def modifier_plat(conn, id_plat, nom, description, prix, categorie, image=None):
+    """Met à jour le plat. L'image n'est changée que si une nouvelle est fournie."""
+    with conn.get_curseur() as curseur:
+        if image:
+            curseur.execute(
+                """UPDATE plats
+                   SET nom = %s, description = %s, prix = %s, categorie = %s, image = %s
+                   WHERE id = %s""",
+                (nom, description, prix, categorie, image, id_plat)
+            )
+        else:
+            curseur.execute(
+                """UPDATE plats
+                   SET nom = %s, description = %s, prix = %s, categorie = %s
+                   WHERE id = %s""",
+                (nom, description, prix, categorie, id_plat)
+            )
