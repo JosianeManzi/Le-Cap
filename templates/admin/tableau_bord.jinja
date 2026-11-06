@@ -21,10 +21,12 @@
                 <div class="card-body p-4">
                     <div class="fs-1 mb-3">🛏️</div>
                     <h4 class="fw-bold">Chambres</h4>
-                    <p class="text-muted">Consulter et ajouter des chambres</p>
+                    <p class="text-muted">Consulter, ajouter, modifier ou supprimer des chambres</p>
                     <div class="d-grid gap-2 mt-3">
-                        <a href="{{ url_for('chambres.page_liste_chambres') }}" class="btn btn-outline-primary rounded-3">Voir la liste</a>
-                        <a href="{{ url_for('chambres.page_ajouter_chambre') }}" class="btn btn-primary rounded-3">Ajouter une chambre</a>
+                        <a href="{{ url_for('chambres.page_admin_chambres') }}"
+                            class="btn btn-outline-primary rounded-3">Voir la liste</a>
+                        <a href="{{ url_for('chambres.page_ajouter_chambre') }}"
+                            class="btn btn-primary rounded-3">Ajouter une chambre</a>
                     </div>
                 </div>
             </div>
@@ -50,7 +52,8 @@
                     <h4 class="fw-bold">Restauration</h4>
                     <p class="text-muted">Ajouter ou retirer des plats du menu</p>
                     <div class="d-grid gap-2 mt-3">
-                        <a href="{{ url_for('restauration.page_admin_menu') }}" class="btn btn-outline-primary rounded-3">Gérer le menu</a>
+                        <a href="{{ url_for('restauration.page_admin_menu') }}"
+                            class="btn btn-outline-primary rounded-3">Gérer le menu</a>
                     </div>
                 </div>
             </div>

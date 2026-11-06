@@ -20,7 +20,7 @@
                 <div class="card-body p-4">
 
                     <form method="post" enctype="multipart/form-data"
-                          action="{{ url_for('chambres.modifier_chambre_admin', id_chambre=chambre.id) }}">
+                          action="{{ url_for('chambres.modifier_chambre_admin', id_chambre=chambre.id) }}" novalidate>
                         <div class="row g-3">
 
                             <div class="col-12 col-md-4">
@@ -73,11 +73,10 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 d-flex flex-wrap justify-content-between gap-3">
-                                <a href="{{ url_for('chambres.page_liste_chambres') }}" class="btn btn-outline-primary rounded-3">Annuler</a>
+                                                       <div class="col-12 d-flex flex-wrap justify-content-between gap-3">
+                                <a href="{{ url_for('chambres.page_admin_chambres') }}" class="btn btn-outline-primary rounded-3">Annuler</a>
                                 <button type="submit" class="btn btn-primary rounded-3 px-5">Enregistrer</button>
                             </div>
-
                         </div>
                     </form>
 

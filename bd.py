@@ -253,6 +253,10 @@ def modifier_chambre(conn, id_chambre, type_chambre, description, prix_nuit,
             )
 
 
-def supprimer_chambre(conn, id_chambre):
+def basculer_disponibilite_chambre(conn, id_chambre):
+    """Retire la chambre de la liste des clients si elle y est, la remet sinon"""
     with conn.get_curseur() as curseur:
-        curseur.execute("DELETE FROM chambres WHERE id = %s", (id_chambre,))
+        curseur.execute(
+            "UPDATE chambres SET disponible = 1 - disponible WHERE id = %s",
+            (id_chambre,)
+        )

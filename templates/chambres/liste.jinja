@@ -4,14 +4,10 @@
 
 {% block contenu %}
 <div class="container py-4">
-    {% for niveau, message in get_flashed_messages(with_categories=true) %}
-    <div class="alert alert-{{ niveau }}">{{ message }}</div>
-    {% endfor %}
     <h1 class="fw-bold mb-4 text-center">Nos chambres</h1>
 
     <div class="row g-4">
         {% for chambre in chambres %}
-
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card border-0 shadow-lg rounded-4 h-100">
                 {% if chambre.image %}
@@ -23,20 +19,7 @@
                     <p class="text-muted">{{ chambre.description }}</p>
                     <p class="fw-semibold fs-5 mb-1">{{ chambre.prix_nuit }} $ / nuit</p>
                     <p class="mb-3">👥 {{ chambre.nb_personnes }} personne{{ 's' if chambre.nb_personnes > 1 }}</p>
-                    <a href="#" class="btn btn-primary rounded-3">Réserver</a>
-                    {% if session.get('est_admin') %}
-                    <div class="d-flex gap-2 mt-3">
-                        <a href="{{ url_for('chambres.page_modifier_chambre', id_chambre=chambre.id) }}"
-                            class="btn btn-outline-secondary btn-sm rounded-3 flex-fill">Modifier</a>
-
-                        <form method="post" class="flex-fill"
-                            action="{{ url_for('chambres.supprimer_chambre_admin', id_chambre=chambre.id) }}"
-                            onsubmit="return confirm('Supprimer définitivement cette chambre ?');">
-                            <button type="submit"
-                                class="btn btn-outline-danger btn-sm rounded-3 w-100">Supprimer</button>
-                        </form>
-                    </div>
-                    {% endif %}
+                   <a href="#" class="btn btn-primary rounded-3">Réserver</a>
                 </div>
             </div>
         </div>
