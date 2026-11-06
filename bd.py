@@ -256,3 +256,12 @@ def modifier_plat(conn, id_plat, nom, description, prix, categorie, image=None):
                    WHERE id = %s""",
                 (nom, description, prix, categorie, id_plat)
             )
+
+def recuperer_reservation(conn, id_reservation):
+    with conn.get_curseur() as curseur:
+        curseur.execute( """SELECT * FROM chambres, utilisateurs, reservations
+               WHERE reservations.chambre_id = chambres.id
+               AND reservations.utilisateur_id = utilisateurs.id
+               AND reservations.id = %s""", (id_reservation,)
+        )
+        return curseur.fetchone()

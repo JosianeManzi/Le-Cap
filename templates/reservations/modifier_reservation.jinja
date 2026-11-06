@@ -1,0 +1,52 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Modifier la réservation{% endblock %}
+
+{% block contenu %}
+<div class="container py-5">
+
+    <div class="mb-4 text-center">
+        <h1 class="fw-bold">Modifier la réservation</h1>
+        <p class="text-muted">
+            Chambres disponibles du <span class="fw-semibold">{{ reservation.date_arrivee }}</span>
+            au <span class="fw-semibold">{{ reservation.date_depart }}</span>
+        </p>
+    </div>
+
+<form method="get" class="row justify-content-center mb-5">
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="input-group input-group-lg">
+            <select class="form-select bg-dark text-white border-secondary" name="type_chambre">
+                <option class="bg-dark text-white" value="">Tous les types</option>
+                <option class="bg-dark text-white" value="Simple">Simple</option>
+                <option class="bg-dark text-white" value="Suite" >Suite</option>
+                <option class="bg-dark text-white" value="Luxueux">Luxueux</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filtrer</button>
+        </div>
+    </div>
+</form>
+    <div class="row g-4">
+        {% for chambre in chambres %}
+         
+        {% else %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center py-5">
+                    <h5 class="fw-bold">Aucune chambre disponible</h5>
+                    <p class="text-muted mb-0">Aucune chambre de ce type n'est libre à ces dates.</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{{ url_for('compte.page_utilisateur') }}" class="btn btn-outline-primary rounded-3">Retour</a>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

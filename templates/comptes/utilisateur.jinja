@@ -57,10 +57,16 @@
               <div class="text-end">
                 <div class="text-info fw-semibold">{{ r.prix_nuit }} $ <span class="text-white-50 small fw-normal">par
                     nuit</span></div>
-                <form method="POST" action="{{ url_for('reservations.annuler', id_reservation=r.id) }}"
-                  class="mt-2">
-                  <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Annuler</button>
-                </form>
+
+                <div class="d-flex flex-wrap justify-content-between gap-3">
+                  <form method="POST" action="{{ url_for('reservations.annuler', id_reservation=r.id) }}" class="mt-2">
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Annuler</button>
+                  </form>
+                  <form method="POST" action="{{ url_for('reservations.page_modifier_reservation', id_reservation=r.id) }}" class="mt-2">
+                    <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">Modifier</button>
+                  </form>
+                </div>
+
               </div>
 
             </div>
