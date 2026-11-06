@@ -1,0 +1,68 @@
+{% extends "base.jinja" %}
+
+{% block titre %}{{ client.prenom }} {{ client.nom }} - Le-Cap{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
+        <div>
+            <h1 class="fw-bold mb-1">{{ client.prenom }} {{ client.nom }}</h1>
+            <p class="text-muted mb-0">{{ client.courriel }}</p>
+            <small class="text-muted">Inscrit le {{ client.date_creation.strftime('%Y-%m-%d') }}</small>
+        </div>
+        <a href="{{ url_for('compte.page_clients') }}" class="btn btn-outline-primary rounded-3">Retour aux clients</a>
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-3">🛏️ Séjours</h4>
+
+            {% for sejour in sejours %}
+            <div class="d-flex flex-wrap justify-content-between gap-2 py-3 border-bottom">
+                <span class="fw-semibold">Chambre {{ sejour.type_chambre }}</span>
+                <span class="text-muted">
+                    Du {{ sejour.date_arrivee }} au {{ sejour.date_depart }}
+                    · {{ sejour.nb_nuits }} nuit{{ 's' if sejour.nb_nuits > 1 }}
+                </span>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">Aucune réservation.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-3">🍽️ Restauration</h4>
+
+            {% for commande in commandes %}
+            <div class="py-3 border-bottom">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span class="fw-semibold">
+                        Commande #{{ commande.id }} · {{ commande.date_commande.strftime('%Y-%m-%d %H:%M') }}
+                    </span>
+                    {% if commande.statut == 'payee' %}
+                    <span class="badge bg-success">Payée</span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">En attente</span>
+                    {% endif %}
+                </div>
+
+                <ul class="mb-0 mt-2 text-muted">
+                    {% for plat in commande.plats %}
+                    <li>{{ plat.quantite }} × {{ plat.nom }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">Aucune commande.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

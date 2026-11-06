@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash,abort
 import bd
 import hashlib
 
@@ -138,3 +138,27 @@ def creer_compte_admin():
     session["est_admin"] = bool(utilisateur["est_admin"])
 
     return jsonify({"succes": True, "message": "Compte admin créé avec succès."}), 201
+
+
+@bp_compte.route("/clients", methods=["GET"])
+def page_clients():
+    if not session.get("est_admin"):
+        abort(403)
+    with bd.creer_connexion() as conn:
+        clients = bd.obtenir_clients(conn)
+    return render_template("admin/clients.jinja", clients=clients)
+
+
+@bp_compte.route("/clients/<int:id_client>", methods=["GET"])
+def page_detail_client(id_client):
+    if not session.get("est_admin"):
+        abort(403)
+    with bd.creer_connexion() as conn:
+        client = bd.obtenir_client(conn, id_client)
+        if not client:
+            abort(404)
+        sejours = bd.obtenir_sejours_client(conn, id_client)
+        commandes = bd.obtenir_commandes_client(conn, id_client)
+    return render_template("admin/client_detail.jinja", client=client, sejours=sejours, commandes=commandes)
+
+

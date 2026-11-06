@@ -1,0 +1,38 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Clients - Le-Cap{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
+        <div>
+            <h1 class="fw-bold mb-1">Nos clients</h1>
+            <p class="text-muted mb-0">Cliquez sur un nom pour voir son activité.</p>
+        </div>
+        <a href="{{ url_for('compte.page_utilisateur') }}" class="btn btn-outline-primary rounded-3">Retour</a>
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-4">
+
+            {% for client in clients %}
+            <div
+                class="d-flex flex-wrap justify-content-between align-items-center gap-2 py-3 {% if not loop.last %}border-bottom{% endif %}">
+                <a href="{{ url_for('compte.page_detail_client', id_client=client.id) }}"
+                    class="fw-semibold text-decoration-none">{{ client.prenom }} {{ client.nom }}</a>
+                <small class="text-muted">Inscrit le {{ client.date_creation.strftime('%Y-%m-%d') }}</small>
+                <span class="text-muted">{{ client.courriel }}</span>
+            </div>
+            {% else %}
+            <p class="text-muted text-center mb-0">Aucun client inscrit pour le moment.</p>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
