@@ -1,0 +1,95 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Gestion des réservations{% endblock %}
+
+{% block contenu %}
+<div class="container py-5">
+
+    <div class="page-header text-white rounded-4 shadow p-4 p-md-5 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <div class="small text-uppercase fw-bold mb-2">Administration</div>
+                <h1 class="fw-bold  text-white mb-2">Gestion des réservations</h1>
+                <p class="mb-0">Consultez et suivez toutes les réservations de votre hôtel.</p>
+            </div>
+            <div class="text-md-end">
+                <div class="fw-bold fs-5">Hôtel</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-6">
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="text-muted fw-semibold small">Total des réservations</div>
+                    <div class="fs-2 fw-bold text-primary mt-1">{{ reservations|length }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="text-muted fw-semibold small">Total des prix </div>
+                    <div class="fs-2 fw-bold text-primary mt-1">
+                        {{ somme }} $
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 mt-4 shadow-sm rounded-4 overflow-hidden">
+
+        <div class="card-header danger p-4 bg-success">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h4 class="fw-bold text-white mb-0">Liste des réservations</h4>
+                    <p class="mb-0 text-white">Détails de vos clients et de leurs séjours.</p>
+
+                </div>
+            </div>
+        </div>
+
+        {% if reservations %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Client</th>
+                        <th>Courriel</th>
+                        <th>Chambre</th>
+                        <th>Arrivée</th>
+                        <th>Départ</th>
+                        <th class="pe-4">Prix / nuit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reservations %}
+                    <tr>
+                        <td class="ps-4 fw-bold"> {{ r.prenom }} {{ r.nom }}</td>
+                        <td>{{ r.email }}</td>
+                        <td> <span class="badge bg-primary">{{ r.type_chambre }}</span> </td>
+                        <td>{{ r.date_arrivee }}</td>
+                        <td>{{ r.date_depart }}</td>
+                        <td class="pe-4 fw-bold text-success">{{ r.prix_nuit }} $</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card-body text-center py-5">
+            <h5 class="fw-bold">Aucune réservation</h5>
+            <p class="text-muted mb-0">Les réservations de vos clients apparaîtront ici.</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -260,3 +260,36 @@ def basculer_disponibilite_chambre(conn, id_chambre):
             "UPDATE chambres SET disponible = 1 - disponible WHERE id = %s",
             (id_chambre,)
         )
+def liste_reservation(conn):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """SELECT *
+               FROM reservations r
+               JOIN utilisateurs u ON u.id = r.utilisateur_id
+               JOIN chambres c ON c.id = r.chambre_id
+               ORDER BY r.date_arrivee DESC"""
+        )
+        return curseur.fetchall()
+def obtenir_plat(conn, id_plat):
+    with conn.get_curseur() as curseur:
+        curseur.execute("SELECT * FROM plats WHERE id = %s", (id_plat,))
+        return curseur.fetchone()
+
+
+def modifier_plat(conn, id_plat, nom, description, prix, categorie, image=None):
+    """Met à jour le plat. L'image n'est changée que si une nouvelle est fournie."""
+    with conn.get_curseur() as curseur:
+        if image:
+            curseur.execute(
+                """UPDATE plats
+                   SET nom = %s, description = %s, prix = %s, categorie = %s, image = %s
+                   WHERE id = %s""",
+                (nom, description, prix, categorie, image, id_plat)
+            )
+        else:
+            curseur.execute(
+                """UPDATE plats
+                   SET nom = %s, description = %s, prix = %s, categorie = %s
+                   WHERE id = %s""",
+                (nom, description, prix, categorie, id_plat)
+            )
