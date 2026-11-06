@@ -223,6 +223,16 @@ def supprimer_reservations_passees(conn):
         )
         return curseur.rowcount
 
+def liste_reservation(conn):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """SELECT *
+               FROM reservations r
+               JOIN utilisateurs u ON u.id = r.utilisateur_id
+               JOIN chambres c ON c.id = r.chambre_id
+               ORDER BY r.date_arrivee DESC"""
+        )
+        return curseur.fetchall()
 def obtenir_plat(conn, id_plat):
     with conn.get_curseur() as curseur:
         curseur.execute("SELECT * FROM plats WHERE id = %s", (id_plat,))
