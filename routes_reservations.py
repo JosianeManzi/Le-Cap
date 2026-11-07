@@ -92,3 +92,4 @@ def page_modifier_reservation(id_reservation):
     with bd.creer_connexion() as conn:
         reservation = bd.recuperer_reservation(conn, id_reservation)
     return render_template("reservations/modifier_reservation.jinja", reservation = reservation)
+

@@ -309,3 +309,12 @@ def chambre_est_reservee(conn, id_chambre):
             (id_chambre,)
         )
         return curseur.fetchone()["nb"] > 0
+
+def recuperer_type_chambre(conn, type_chambre, arrivee, depart, id_reservation):
+    with conn.get_curseur() as curseur:
+        curseur.execute( """SELECT * FROM chambres WHERE type_chambre = %s
+        AND disponible = 1 AND NOT EXISTS ( SELECT 1 FROM reservations WHERE reservations.chambre_id = chambres.id
+        AND reservations.id != %s AND reservations.date_arrivee < %s AND reservations.date_depart > %s )
+        ORDER BY prix_nuit""", (type_chambre, id_reservation, depart, arrivee)
+        )
+        return curseur.fetchall()
