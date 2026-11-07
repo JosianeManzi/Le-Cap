@@ -1,0 +1,92 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Modifier une chambre{% endblock %}
+
+{% block contenu %}
+<div class="page-inscription container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="mb-5 text-center">
+                <h1 class="fw-bold">Modifier une chambre</h1>
+                <p class="text-muted">{{ chambre.type_chambre }}</p>
+            </div>
+
+           {% for niveau, message in get_flashed_messages(with_categories=true) %}
+<div class="alert alert-{{ niveau }}">{{ message }}</div>
+{% endfor %}
+
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4">
+
+                    <form method="post" enctype="multipart/form-data"
+                          action="{{ url_for('chambres.modifier_chambre_admin', id_chambre=chambre.id) }}" novalidate>
+                        <div class="row g-3">
+
+                            <div class="col-12 col-md-4">
+                                <label for="type_chambre" class="form-label">Type de chambre</label>
+                                <select class="form-select" id="type_chambre" name="type_chambre" required>
+                                    {% for type in types %}
+                                    <option value="{{ type }}" {% if type == chambre.type_chambre %}selected{% endif %}>{{ type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-6 col-md-4">
+                                <label for="prix_nuit" class="form-label">Prix par nuit ($)</label>
+                                <input type="number" class="form-control" id="prix_nuit" name="prix_nuit"
+                                       step="0.01" min="0.01" value="{{ chambre.prix_nuit }}" required>
+                            </div>
+
+                            <div class="col-6 col-md-4">
+                                <label for="nb_personnes" class="form-label">Nombre de personnes</label>
+                                <select class="form-select" id="nb_personnes" name="nb_personnes" required>
+                                    {% for n in range(1, 5) %}
+                                    <option value="{{ n }}" {% if n == chambre.nb_personnes %}selected{% endif %}>{{ n }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description"
+                                          rows="3" required>{{ chambre.description }}</textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="image" class="form-label">Image de la chambre</label>
+                                {% if chambre.image %}
+                                <div class="mb-2">
+                                    <img src="{{ url_for('static', filename='img/' ~ chambre.image) }}"
+                                         alt="{{ chambre.type_chambre }}" class="rounded-3" style="max-height: 140px;">
+                                </div>
+                                {% endif %}
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                <div class="form-text">Laissez vide pour garder l'image actuelle.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="disponible" name="disponible"
+                                           {% if chambre.disponible %}checked{% endif %}>
+                                    <label class="form-check-label" for="disponible">Disponible</label>
+                                </div>
+                            </div>
+
+                                                       <div class="col-12 d-flex flex-wrap justify-content-between gap-3">
+                                <a href="{{ url_for('chambres.page_admin_chambres') }}" class="btn btn-outline-primary rounded-3">Annuler</a>
+                                <button type="submit" class="btn btn-primary rounded-3 px-5">Enregistrer</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

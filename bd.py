@@ -223,6 +223,43 @@ def supprimer_reservations_passees(conn):
         )
         return curseur.rowcount
 
+
+
+def obtenir_chambre(conn, id_chambre):
+    with conn.get_curseur() as curseur:
+        curseur.execute("SELECT * FROM chambres WHERE id = %s", (id_chambre,))
+        return curseur.fetchone()
+
+
+def modifier_chambre(conn, id_chambre, type_chambre, description, prix_nuit,
+                     nb_personnes, disponible, image=None):
+    """Met à jour la chambre. L'image n'est changée que si une nouvelle est fournie."""
+    with conn.get_curseur() as curseur:
+        if image:
+            curseur.execute(
+                """UPDATE chambres
+                   SET type_chambre = %s, description = %s, prix_nuit = %s,
+                       nb_personnes = %s, disponible = %s, image = %s
+                   WHERE id = %s""",
+                (type_chambre, description, prix_nuit, nb_personnes, disponible, image, id_chambre)
+            )
+        else:
+            curseur.execute(
+                """UPDATE chambres
+                   SET type_chambre = %s, description = %s, prix_nuit = %s,
+                       nb_personnes = %s, disponible = %s
+                   WHERE id = %s""",
+                (type_chambre, description, prix_nuit, nb_personnes, disponible, id_chambre)
+            )
+
+
+def basculer_disponibilite_chambre(conn, id_chambre):
+    """Retire la chambre de la liste des clients si elle y est, la remet sinon"""
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "UPDATE chambres SET disponible = 1 - disponible WHERE id = %s",
+            (id_chambre,)
+        )
 def liste_reservation(conn):
     with conn.get_curseur() as curseur:
         curseur.execute(
@@ -265,3 +302,10 @@ def recuperer_reservation(conn, id_reservation):
                AND reservations.id = %s""", (id_reservation,)
         )
         return curseur.fetchone()
+def chambre_est_reservee(conn, id_chambre):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT COUNT(*) AS nb FROM reservations WHERE chambre_id = %s",
+            (id_chambre,)
+        )
+        return curseur.fetchone()["nb"] > 0

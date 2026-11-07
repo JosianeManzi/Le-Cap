@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, redirect, session, flash, abort, url_for
 import bd
 import os
 from werkzeug.utils import secure_filename
@@ -70,4 +70,86 @@ def ajouter_chambre():
 def page_liste_chambres():
     with bd.creer_connexion() as conn:
         chambres = bd.obtenir_chambres(conn)
+    chambres = [c for c in chambres if c["disponible"]]
     return render_template("chambres/liste.jinja", chambres=chambres)
+
+def admin_requis():
+    if not session.get("est_admin"):
+        abort(403)
+
+
+@bp_chambres.route("/admin", methods=["GET"])
+def page_admin_chambres():
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        chambres = bd.obtenir_chambres(conn)
+        for chambre in chambres:
+            chambre["reservee"] = bd.chambre_est_reservee(conn, chambre["id"])
+    return render_template("chambres/admin_liste.jinja", chambres=chambres)
+
+
+@bp_chambres.route("/modifier/<int:id_chambre>", methods=["GET"])
+def page_modifier_chambre(id_chambre):
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        chambre = bd.obtenir_chambre(conn, id_chambre)
+        reservee = bd.chambre_est_reservee(conn, id_chambre)
+    if not chambre:
+        abort(404)
+    if reservee:
+        flash("Cette chambre a déjà été réservée, elle ne peut plus être modifiée.", "danger")
+        return redirect(url_for("chambres.page_admin_chambres"))
+    return render_template("chambres/modifier.jinja", chambre=chambre, types=TYPES_CHAMBRE)
+
+
+@bp_chambres.route("/modifier/<int:id_chambre>", methods=["POST"])
+def modifier_chambre_admin(id_chambre):
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        if bd.chambre_est_reservee(conn, id_chambre):
+            flash("Cette chambre a déjà été réservée, elle ne peut plus être modifiée.", "danger")
+            return redirect(url_for("chambres.page_admin_chambres"))
+    type_chambre = request.form.get("type_chambre", "")
+    description = request.form.get("description", "").strip()
+    prix_nuit = request.form.get("prix_nuit", type=float)
+    nb_personnes = request.form.get("nb_personnes", type=int)
+    disponible = 1 if request.form.get("disponible") else 0
+    image = request.files.get("image")
+
+    if (type_chambre not in TYPES_CHAMBRE or not description
+            or prix_nuit is None or prix_nuit <= 0
+            or nb_personnes is None or not 1 <= nb_personnes <= 4):
+        flash("Merci de remplir correctement tous les champs.", "danger")
+        return redirect(url_for("chambres.page_modifier_chambre", id_chambre=id_chambre))
+
+    nom_image = None
+    if image and image.filename:
+        extension = image.filename.rsplit(".", 1)[-1].lower()
+        if extension not in EXTENSIONS_IMAGE:
+            flash("Format d'image non accepté.", "danger")
+            return redirect(url_for("chambres.page_modifier_chambre", id_chambre=id_chambre))
+        nom_image = f"{uuid.uuid4().hex[:8]}_{secure_filename(image.filename)}"
+        image.save(os.path.join("static", "img", nom_image))
+
+    with bd.creer_connexion() as conn:
+        bd.modifier_chambre(conn, id_chambre, type_chambre, description, prix_nuit,
+                            nb_personnes, disponible, nom_image)
+
+    flash("La chambre a été modifiée.", "success")
+    return redirect(url_for("chambres.page_admin_chambres"))
+
+
+
+@bp_chambres.route("/basculer/<int:id_chambre>", methods=["POST"])
+@bp_chambres.route("/basculer/<int:id_chambre>", methods=["POST"])
+def basculer_chambre_admin(id_chambre):
+    admin_requis()
+    with bd.creer_connexion() as conn:
+        chambre = bd.obtenir_chambre(conn, id_chambre)
+        if not chambre:
+            abort(404)
+        if chambre["disponible"] and bd.chambre_est_reservee(conn, id_chambre):
+            flash("Cette chambre a déjà été réservée, elle ne peut pas être retirée.", "danger")
+            return redirect(url_for("chambres.page_admin_chambres"))
+        bd.basculer_disponibilite_chambre(conn, id_chambre)
+    return redirect(url_for("chambres.page_admin_chambres"))
