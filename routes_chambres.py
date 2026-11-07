@@ -83,21 +83,32 @@ def page_admin_chambres():
     admin_requis()
     with bd.creer_connexion() as conn:
         chambres = bd.obtenir_chambres(conn)
+        for chambre in chambres:
+            chambre["reservee"] = bd.chambre_est_reservee(conn, chambre["id"])
     return render_template("chambres/admin_liste.jinja", chambres=chambres)
+
 
 @bp_chambres.route("/modifier/<int:id_chambre>", methods=["GET"])
 def page_modifier_chambre(id_chambre):
     admin_requis()
     with bd.creer_connexion() as conn:
         chambre = bd.obtenir_chambre(conn, id_chambre)
+        reservee = bd.chambre_est_reservee(conn, id_chambre)
     if not chambre:
         abort(404)
+    if reservee:
+        flash("Cette chambre a déjà été réservée, elle ne peut plus être modifiée.", "danger")
+        return redirect(url_for("chambres.page_admin_chambres"))
     return render_template("chambres/modifier.jinja", chambre=chambre, types=TYPES_CHAMBRE)
 
 
 @bp_chambres.route("/modifier/<int:id_chambre>", methods=["POST"])
 def modifier_chambre_admin(id_chambre):
     admin_requis()
+    with bd.creer_connexion() as conn:
+        if bd.chambre_est_reservee(conn, id_chambre):
+            flash("Cette chambre a déjà été réservée, elle ne peut plus être modifiée.", "danger")
+            return redirect(url_for("chambres.page_admin_chambres"))
     type_chambre = request.form.get("type_chambre", "")
     description = request.form.get("description", "").strip()
     prix_nuit = request.form.get("prix_nuit", type=float)
@@ -127,9 +138,18 @@ def modifier_chambre_admin(id_chambre):
     flash("La chambre a été modifiée.", "success")
     return redirect(url_for("chambres.page_admin_chambres"))
 
+
+
+@bp_chambres.route("/basculer/<int:id_chambre>", methods=["POST"])
 @bp_chambres.route("/basculer/<int:id_chambre>", methods=["POST"])
 def basculer_chambre_admin(id_chambre):
     admin_requis()
     with bd.creer_connexion() as conn:
+        chambre = bd.obtenir_chambre(conn, id_chambre)
+        if not chambre:
+            abort(404)
+        if chambre["disponible"] and bd.chambre_est_reservee(conn, id_chambre):
+            flash("Cette chambre a déjà été réservée, elle ne peut pas être retirée.", "danger")
+            return redirect(url_for("chambres.page_admin_chambres"))
         bd.basculer_disponibilite_chambre(conn, id_chambre)
     return redirect(url_for("chambres.page_admin_chambres"))

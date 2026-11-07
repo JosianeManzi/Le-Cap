@@ -293,3 +293,11 @@ def modifier_plat(conn, id_plat, nom, description, prix, categorie, image=None):
                    WHERE id = %s""",
                 (nom, description, prix, categorie, id_plat)
             )
+
+def chambre_est_reservee(conn, id_chambre):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT COUNT(*) AS nb FROM reservations WHERE chambre_id = %s",
+            (id_chambre,)
+        )
+        return curseur.fetchone()["nb"] > 0

@@ -40,16 +40,24 @@
                     <p class="mb-3">👥 {{ chambre.nb_personnes }} personne{{ 's' if chambre.nb_personnes > 1 }}</p>
 
                     <div class="d-grid gap-2">
+                        {% if chambre.reservee %}
+                        <button type="button" class="btn btn-secondary rounded-3" disabled>Déjà réservée</button>
+                        {% else %}
                         <a href="{{ url_for('chambres.page_modifier_chambre', id_chambre=chambre.id) }}"
                            class="btn btn-primary rounded-3">Modifier</a>
+                        {% endif %}
 
-                                              <form method="post" action="{{ url_for('chambres.basculer_chambre_admin', id_chambre=chambre.id) }}" novalidate>
+                        {% if chambre.reservee and chambre.disponible %}
+                        <button type="button" class="btn btn-outline-secondary rounded-3 w-100" disabled>Retrait impossible</button>
+                        {% else %}
+                        <form method="post" action="{{ url_for('chambres.basculer_chambre_admin', id_chambre=chambre.id) }}" novalidate>
                             {% if chambre.disponible %}
                             <button type="submit" class="btn btn-outline-danger rounded-3 w-100">Retirer de la liste</button>
                             {% else %}
                             <button type="submit" class="btn btn-outline-primary rounded-3 w-100">Remettre dans la liste</button>
                             {% endif %}
                         </form>
+                        {% endif %}
                     </div>
                 </div>
 
