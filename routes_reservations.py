@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for,flash, session
+from flask import Blueprint, render_template, request, redirect, url_for,flash, session, abort
 import bd
 from datetime import date
 
@@ -86,3 +86,33 @@ def liste_reservations():
         somme += total_sejour
 
     return render_template("reservations/liste_reservation.jinja", reservations=reservations, somme=somme)
+
+@bp_reservations.route("/reservations/<int:id_reservation>/modifier", methods=["GET", "POST"])
+def page_modifier_reservation(id_reservation):
+    if "id_utilisateur" not in session:
+        return redirect(url_for("compte.page_connexion"))
+
+    type_chambre = request.args.get("type_chambre", "")
+
+    with bd.creer_connexion() as conn:
+        reservation = bd.recuperer_reservation(conn, id_reservation)
+        if not reservation or reservation["utilisateur_id"] != session["id_utilisateur"]:
+            abort(404)
+
+        chambres = bd.recuperer_type_chambre(conn, type_chambre, reservation["date_arrivee"], reservation["date_depart"], id_reservation)
+
+        if request.method == "POST":
+            id_chambre = request.form.get("chambre_id", type=int)
+            chambres_libres = bd.recuperer_type_chambre( conn, "", reservation["date_arrivee"], reservation["date_depart"], id_reservation )
+
+            chambre_est_libre = False
+            for chambre in chambres_libres:
+                if chambre["id"] == id_chambre:
+                    chambre_est_libre = True
+
+            if chambre_est_libre:
+                bd.modifier_chambre_reservation(conn, id_reservation, id_chambre)
+                flash("Réservation modifiée.", "success")
+                return redirect(url_for("compte.page_utilisateur"))
+
+    return render_template("reservations/modifier_reservation.jinja", reservation=reservation, chambres=chambres, type_chambre=type_chambre)

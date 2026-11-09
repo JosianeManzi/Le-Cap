@@ -13,11 +13,6 @@
    {% for niveau, message in get_flashed_messages(with_categories=true) %}
 <div class="alert alert-{{ niveau }}">{{ message }}</div>
 {% endfor %}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for niveau, message in messages %}
-    <div class="alert alert-{{ niveau }}">{{ message }}</div>
-    {% endfor %}
-    {% endwith %}
 
     <div class="card border-0 shadow-lg rounded-4 mb-5">
         <div class="card-body p-4">

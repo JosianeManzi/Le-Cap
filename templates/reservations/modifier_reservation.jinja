@@ -1,0 +1,84 @@
+{% extends "base.jinja" %}
+
+{% block titre %}Modifier la réservation{% endblock %}
+
+{% block contenu %}
+<div class="container py-5">
+
+    <div class="mb-4 text-center">
+        <h1 class="fw-bold">Modifier la réservation</h1>
+        <p class="text-muted">
+            Chambres disponibles du <span class="fw-semibold">{{ reservation.date_arrivee }}</span>
+            au <span class="fw-semibold">{{ reservation.date_depart }}</span>
+        </p>
+    </div>
+
+    <form method="get" action="{{ url_for('reservations.page_modifier_reservation', id_reservation=reservation.id) }}"
+        class="row justify-content-center mb-5">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="input-group input-group-lg">
+                <select class="form-select bg-dark text-white border-secondary" name="type_chambre">
+                    <option class="bg-dark text-white" value="">Tous les types</option>
+                    <option class="bg-dark text-white" value="Simple" {% if type_chambre=='Simple' %}selected{% endif
+                        %}>Simple</option>
+                    <option class="bg-dark text-white" value="Suite" {% if type_chambre=='Suite' %}selected{% endif %}>
+                        Suite</option>
+                    <option class="bg-dark text-white" value="Luxueux" {% if type_chambre=='Luxueux' %}selected{% endif
+                        %}>Luxueux</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+            </div>
+        </div>
+    </form>
+    <div class="row g-4">
+        {% for chambre in chambres %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden">
+                <img src="{{ url_for('static', filename='img/' ~ chambre.image) }}" alt="{{ chambre.type_chambre }}"
+                    class="card-img-top" style="height: 200px; object-fit: cover;">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="fw-bold mb-0">{{ chambre.type_chambre }}</h4>
+                        {% if chambre.id == reservation.chambre_id %}
+                        <span class="badge bg-success">Chambre actuelle</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted">{{ chambre.description }}</p>
+                    <p class="mb-1"><span class="fw-semibold">Personnes :</span> {{ chambre.nb_personnes }}</p>
+                    <p class="fw-bold text-primary fs-5 mb-4">{{ chambre.prix_nuit }} $ <span class="fs-6 fw-normal text-muted">/ nuit</span></p>
+                    <form method="post"
+                        action="{{ url_for('reservations.page_modifier_reservation', id_reservation=reservation.id) }}"
+                        class="mt-auto">
+                        <input type="hidden" name="chambre_id" value="{{ chambre.id }}">
+                        {% if chambre.id == reservation.chambre_id %}
+                        <button type="button" class="btn btn-secondary w-100 rounded-3" disabled>Déjà
+                            sélectionnée</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Modifier pour cette
+                            chambre</button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center py-5">
+                    <h5 class="fw-bold">Aucune chambre disponible</h5>
+                    <p class="text-muted mb-0">Aucune chambre de ce type n'est libre à ces dates.</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{{ url_for('compte.page_utilisateur') }}" class="btn btn-outline-primary rounded-3">Retour</a>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
