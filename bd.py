@@ -293,6 +293,59 @@ def modifier_plat(conn, id_plat, nom, description, prix, categorie, image=None):
                    WHERE id = %s""",
                 (nom, description, prix, categorie, id_plat)
             )
+def obtenir_clients(conn):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT id, nom, prenom, email AS courriel, date_creation FROM utilisateurs WHERE est_admin = 0 ORDER BY nom, prenom"
+        )
+        return curseur.fetchall()
+
+
+def obtenir_client(conn, id_client):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            "SELECT id, nom, prenom, email AS courriel, date_creation FROM utilisateurs WHERE id = %s AND est_admin = 0",
+            (id_client,)
+        )
+        return curseur.fetchone()
+
+
+def obtenir_sejours_client(conn, id_client):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """SELECT r.date_arrivee, r.date_depart, c.type_chambre,
+                      DATEDIFF(r.date_depart, r.date_arrivee) AS nb_nuits
+               FROM reservations r
+               JOIN chambres c ON c.id = r.chambre_id
+               WHERE r.utilisateur_id = %s
+               ORDER BY r.date_arrivee DESC""",
+            (id_client,)
+        )
+        return curseur.fetchall()
+
+
+def obtenir_commandes_client(conn, id_client):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """SELECT id, statut, date_commande
+               FROM commandes
+               WHERE id_utilisateur = %s
+               ORDER BY date_commande DESC""",
+            (id_client,)
+        )
+        commandes = curseur.fetchall()
+
+        for commande in commandes:
+            curseur.execute(
+                """SELECT cp.quantite, p.nom
+                   FROM commande_plats cp
+                   JOIN plats p ON p.id = cp.id_plat
+                   WHERE cp.id_commande = %s""",
+                (commande["id"],)
+            )
+            commande["plats"] = curseur.fetchall()
+
+        return commandes
 
 def recuperer_reservation(conn, id_reservation):
     with conn.get_curseur() as curseur:
