@@ -312,9 +312,16 @@ def chambre_est_reservee(conn, id_chambre):
 
 def recuperer_type_chambre(conn, type_chambre, arrivee, depart, id_reservation):
     with conn.get_curseur() as curseur:
-        curseur.execute( """SELECT * FROM chambres WHERE type_chambre = %s
-        AND disponible = 1 AND NOT EXISTS ( SELECT 1 FROM reservations WHERE reservations.chambre_id = chambres.id
-        AND reservations.id != %s AND reservations.date_arrivee < %s AND reservations.date_depart > %s )
-        ORDER BY prix_nuit""", (type_chambre, id_reservation, depart, arrivee)
+        curseur.execute(
+            """SELECT * FROM chambres WHERE (%s = '' OR type_chambre = %s)
+               AND disponible = 1 AND NOT EXISTS (SELECT 1 FROM reservations WHERE reservations.chambre_id = chambres.id
+               AND reservations.id != %s AND reservations.date_arrivee < %s AND reservations.date_depart > %s )
+               ORDER BY prix_nuit""",
+            (type_chambre, type_chambre, id_reservation, depart, arrivee)
         )
         return curseur.fetchall()
+
+def modifier_chambre_reservation(conn, id_reservation, id_chambre):
+    with conn.get_curseur() as curseur:
+        curseur.execute( "UPDATE reservations SET chambre_id = %s WHERE id = %s", (id_chambre, id_reservation)
+        )
