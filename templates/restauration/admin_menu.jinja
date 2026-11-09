@@ -10,6 +10,9 @@
         <p class="text-muted">Ajoutez un plat ou retirez-le du menu proposé aux clients.</p>
     </div>
 
+   {% for niveau, message in get_flashed_messages(with_categories=true) %}
+<div class="alert alert-{{ niveau }}">{{ message }}</div>
+{% endfor %}
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% for niveau, message in messages %}
     <div class="alert alert-{{ niveau }}">{{ message }}</div>
