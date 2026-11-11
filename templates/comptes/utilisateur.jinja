@@ -62,7 +62,8 @@
                   <form method="POST" action="{{ url_for('reservations.annuler', id_reservation=r.id) }}" class="mt-2">
                     <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Annuler</button>
                   </form>
-                  <form method="POST" action="{{ url_for('reservations.page_modifier_reservation', id_reservation=r.id) }}" class="mt-2">
+                  <form method="POST"
+                    action="{{ url_for('reservations.page_modifier_reservation', id_reservation=r.id) }}" class="mt-2">
                     <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">Modifier</button>
                   </form>
                 </div>
@@ -80,7 +81,27 @@
         </div>
       </div>
     </div>
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card bg-dark bg-opacity-50 text-white border-info border-opacity-25 rounded-4 h-100">
+          <div class="card-body p-4">
+            <h5 class="text-info mb-4"><i class="fa-solid fa-receipt me-2"></i>Facture $</h5>
+            <div class="mb-3">
+              <div class="text-white-50 small">Réservations</div>
+              <div></div>
+            </div>
+            <div class="mb-3">
+              <div class="text-white-50 small">Repas</div>
+              <div></div>
+            </div>
+            <div>
+              <div class="text-white-50 small">Total</div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+    </div>
   </div>
-</div>
-{% endblock %}
+  {% endblock %}
