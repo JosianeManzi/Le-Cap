@@ -378,3 +378,16 @@ def modifier_chambre_reservation(conn, id_reservation, id_chambre):
     with conn.get_curseur() as curseur:
         curseur.execute( "UPDATE reservations SET chambre_id = %s WHERE id = %s", (id_chambre, id_reservation)
         )
+
+def obtenir_repas_utilisateur(conn, id_utilisateur):
+    with conn.get_curseur() as curseur:
+        curseur.execute(
+            """SELECT commandes.id AS id_commande, commandes.date_commande, commandes.statut,
+               plats.nom, commande_plats.quantite, commande_plats.prix_unitaire
+               FROM commandes JOIN commande_plats ON commande_plats.id_commande = commandes.id
+               JOIN plats ON plats.id = commande_plats.id_plat
+               WHERE commandes.id_utilisateur = %s
+               ORDER BY commandes.date_commande DESC""",
+            (id_utilisateur,)
+        )
+        return curseur.fetchall()
