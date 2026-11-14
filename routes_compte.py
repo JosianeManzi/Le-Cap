@@ -161,16 +161,29 @@ def page_utilisateur():
     if session.get("est_admin"):
         return render_template("admin/tableau_bord.jinja", utilisateur=utilisateur)
 
-    total_reservations = 0
     for reservation in reservations:
-        nb_nuits = (reservation["date_depart"] - reservation["date_arrivee"]).days
-        total_reservations += reservation["prix_nuit"] * nb_nuits
+        reservation["repas"] = []
+        reservation["total_repas"] = 0
 
     total_repas = 0
     for plat in repas:
-        total_repas += plat["prix_unitaire"] * plat["quantite"]
+        plat["total"] = plat["prix_unitaire"] * plat["quantite"]
+        total_repas += plat["total"]
+
+        for reservation in reservations:
+            if reservation["id"] == plat["id_reservation"]:
+                reservation["repas"].append(plat)
+                reservation["total_repas"] += plat["total"]
+
+    total_reservations = 0
+    for reservation in reservations:
+        nb_nuits = (reservation["date_depart"] - reservation["date_arrivee"]).days
+        reservation["nb_nuits"] = nb_nuits
+        reservation["total_sejour"] = reservation["prix_nuit"] * nb_nuits
+        reservation["total"] = reservation["total_sejour"] + reservation["total_repas"]
+        total_reservations += reservation["total_sejour"]
 
     total_general = total_reservations + total_repas
 
-    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur, reservations=reservations,
-        total_reservations=total_reservations, total_repas=total_repas, total_general=total_general)
+    return render_template("comptes/utilisateur.jinja",utilisateur=utilisateur,reservations=reservations,
+                           total_reservations=total_reservations,total_repas=total_repas,total_general=total_general)
