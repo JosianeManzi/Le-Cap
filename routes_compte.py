@@ -88,22 +88,6 @@ def connexion():
         return redirect(chambre)
     return redirect(url_for("compte.page_utilisateur"))
 
-@bp_compte.route("/comptes/utilisateur")
-def page_utilisateur():
-    id_utilisateur = session.get("id_utilisateur")
-    if not id_utilisateur:
-        return redirect(url_for("compte.page_connexion"))
-
-    with bd.creer_connexion() as conn:
-        bd.supprimer_reservations_passees(conn)
-        utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
-        reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
-
-
-    if session.get("est_admin"):
-        return render_template("admin/tableau_bord.jinja", utilisateur=utilisateur)
-
-    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur, reservations=reservations)
 
 @bp_compte.route('/deconnexion')
 def deconnexion():
@@ -162,3 +146,31 @@ def page_detail_client(id_client):
     return render_template("admin/client_detail.jinja", client=client, sejours=sejours, commandes=commandes)
 
 
+@bp_compte.route("/comptes/utilisateur")
+def page_utilisateur():
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
+
+    with bd.creer_connexion() as conn:
+        bd.supprimer_reservations_passees(conn)
+        utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
+        reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
+        repas = bd.obtenir_repas_utilisateur(conn, id_utilisateur)
+
+    if session.get("est_admin"):
+        return render_template("admin/tableau_bord.jinja", utilisateur=utilisateur)
+
+    total_reservations = 0
+    for reservation in reservations:
+        nb_nuits = (reservation["date_depart"] - reservation["date_arrivee"]).days
+        total_reservations += reservation["prix_nuit"] * nb_nuits
+
+    total_repas = 0
+    for plat in repas:
+        total_repas += plat["prix_unitaire"] * plat["quantite"]
+
+    total_general = total_reservations + total_repas
+
+    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur, reservations=reservations,
+        total_reservations=total_reservations, total_repas=total_repas, total_general=total_general)

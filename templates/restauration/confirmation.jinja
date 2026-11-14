@@ -39,8 +39,8 @@
                 <a href="{{ url_for('restauration.page_menu') }}" class="btn btn-outline-primary rounded-3">Retour au
                     menu</a>
                 {% if commande.statut != 'payee' %}
-                <a href="{{ url_for('restauration.page_paiement', id_commande=commande.id) }}"
-                    class="btn btn-primary rounded-3 px-5">Payer</a> {% endif %}
+                <a href="{{ url_for('compte.page_utilisateur') }}"
+                    class="btn btn-primary rounded-3 px-5">Facture</a> {% endif %}
             </div>
 
         </div>

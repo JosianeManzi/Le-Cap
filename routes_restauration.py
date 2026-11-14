@@ -150,54 +150,6 @@ def valider_carte(nom, numero, expiration, cvv):
     return None
 
 
-@bp_restauration.route("/commande/<int:id_commande>/paiement", methods=["GET"])
-def page_paiement(id_commande):
-    id_utilisateur = session.get("id_utilisateur")
-    if not id_utilisateur:
-        return redirect(url_for("compte.page_connexion"))
-
-    with bd.creer_connexion() as conn:
-        commande = bd.obtenir_commande(conn, id_commande, id_utilisateur)
-
-    if not commande:
-        abort(404)
-    if commande["statut"] == "payee":
-        return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
-
-    return render_template("restauration/paiement.jinja", commande=commande, erreur=None, nom_carte="")
-
-
-@bp_restauration.route("/commande/<int:id_commande>/payer", methods=["POST"])
-def payer(id_commande):
-    id_utilisateur = session.get("id_utilisateur")
-    if not id_utilisateur:
-        return redirect(url_for("compte.page_connexion"))
-
-    with bd.creer_connexion() as conn:
-        commande = bd.obtenir_commande(conn, id_commande, id_utilisateur)
-
-    if not commande:
-        abort(404)
-    if commande["statut"] == "payee":
-        return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
-
-    nom_carte = request.form.get("nom_carte", "").strip()
-    numero = request.form.get("numero_carte", "").replace(" ", "")
-    expiration = request.form.get("expiration", "").strip()
-    cvv = request.form.get("cvv", "").strip()
-
-    erreur = valider_carte(nom_carte, numero, expiration, cvv)
-    if erreur:
-        return render_template("restauration/paiement.jinja",
-                               commande=commande, erreur=erreur, nom_carte=nom_carte)
-
-    with bd.creer_connexion() as conn:
-        bd.payer_commande(conn, id_commande, id_utilisateur)
-
-    return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
-
-
-
 def enregistrer_image(fichier):
     """Enregistre l'image dans static/img. Retourne (nom_du_fichier, message_d_erreur)."""
     nom_original = fichier.filename
@@ -298,9 +250,6 @@ def page_modifier_plat(id_plat):
 
 
 @bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["POST"])
-@bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["POST"])
-
-
 def modifier_plat_menu(id_plat):
     admin_requis()
     nom = request.form.get("nom", "").strip()
