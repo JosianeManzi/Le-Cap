@@ -88,22 +88,6 @@ def connexion():
         return redirect(chambre)
     return redirect(url_for("compte.page_utilisateur"))
 
-@bp_compte.route("/comptes/utilisateur")
-def page_utilisateur():
-    id_utilisateur = session.get("id_utilisateur")
-    if not id_utilisateur:
-        return redirect(url_for("compte.page_connexion"))
-
-    with bd.creer_connexion() as conn:
-        bd.supprimer_reservations_passees(conn)
-        utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
-        reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
-
-
-    if session.get("est_admin"):
-        return render_template("admin/tableau_bord.jinja", utilisateur=utilisateur)
-
-    return render_template("comptes/utilisateur.jinja", utilisateur=utilisateur, reservations=reservations)
 
 @bp_compte.route('/deconnexion')
 def deconnexion():
@@ -162,3 +146,44 @@ def page_detail_client(id_client):
     return render_template("admin/client_detail.jinja", client=client, sejours=sejours, commandes=commandes)
 
 
+@bp_compte.route("/comptes/utilisateur")
+def page_utilisateur():
+    id_utilisateur = session.get("id_utilisateur")
+    if not id_utilisateur:
+        return redirect(url_for("compte.page_connexion"))
+
+    with bd.creer_connexion() as conn:
+        bd.supprimer_reservations_passees(conn)
+        utilisateur = bd.obtenir_utilisateur(conn, id_utilisateur)
+        reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
+        repas = bd.obtenir_repas_utilisateur(conn, id_utilisateur)
+
+    if session.get("est_admin"):
+        return render_template("admin/tableau_bord.jinja", utilisateur=utilisateur)
+
+    for reservation in reservations:
+        reservation["repas"] = []
+        reservation["total_repas"] = 0
+
+    total_repas = 0
+    for plat in repas:
+        plat["total"] = plat["prix_unitaire"] * plat["quantite"]
+        total_repas += plat["total"]
+
+        for reservation in reservations:
+            if reservation["id"] == plat["id_reservation"]:
+                reservation["repas"].append(plat)
+                reservation["total_repas"] += plat["total"]
+
+    total_reservations = 0
+    for reservation in reservations:
+        nb_nuits = (reservation["date_depart"] - reservation["date_arrivee"]).days
+        reservation["nb_nuits"] = nb_nuits
+        reservation["total_sejour"] = reservation["prix_nuit"] * nb_nuits
+        reservation["total"] = reservation["total_sejour"] + reservation["total_repas"]
+        total_reservations += reservation["total_sejour"]
+
+    total_general = total_reservations + total_repas
+
+    return render_template("comptes/utilisateur.jinja",utilisateur=utilisateur,reservations=reservations,
+                           total_reservations=total_reservations,total_repas=total_repas,total_general=total_general)

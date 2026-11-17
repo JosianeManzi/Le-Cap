@@ -7,6 +7,12 @@
 
     <h1 class="fw-bold text-center mb-5">Mon panier</h1>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for niveau, message in messages %}
+    <div class="alert alert-{{ niveau }}">{{ message }}</div>
+    {% endfor %}
+    {% endwith %}
+
     {% if lignes %}
     <div class="row justify-content-center">
         <div class="col-12 col-lg-9">
@@ -61,14 +67,30 @@
             {% if not session.get('id_utilisateur') %}
             <p class="text-muted text-center mt-4 mb-0">Vous devez être connecté pour commander.</p>
             {% endif %}
-            <div class="d-flex flex-wrap justify-content-between gap-3 mt-4">
-                <a href="{{ url_for('restauration.page_menu') }}" class="btn btn-outline-primary rounded-3">Continuer
-                    mes achats</a>
-                <form method="post" action="{{ url_for('restauration.commander') }}">
-                    <button type="submit" class="btn btn-primary rounded-3 px-5">Commander</button>
-                </form>
-            </div>
-
+            <form method="post" action="{{ url_for('restauration.commander') }}" class="mt-4" novalidate>
+                {% if session.get('id_utilisateur') and not reservations %}
+                <div class="alert alert-warning">
+                    Vous devez avoir une réservation pour commander des repas.
+                </div>
+                {% elif reservations|length > 1 %}
+                <div class="mb-3">
+                    <label for="id_reservation" class="form-label">Pour quelle réservation ?</label>
+                    <select class="form-select bg-dark text-white border-secondary" id="id_reservation"
+                        name="id_reservation" required>
+                        <option class="bg-dark text-white" value="">Choisir...</option>
+                        {% for r in reservations %}
+                        <option class="bg-dark text-white" value="{{ r.id }}">{{ r.type_chambre }} : du {{
+                            r.date_arrivee }} au {{ r.date_depart }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <div class="d-flex flex-wrap justify-content-between gap-3">
+                    <a href="{{ url_for('restauration.page_menu') }}"
+                        class="btn btn-outline-primary rounded-3">Continuer mes achats</a>
+                    <button type="submit" class="btn btn-primary rounded-3 px-4">Commander</button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -113,13 +113,14 @@ def obtenir_plats_par_ids(conn, ids):
         )
         return curseur.fetchall()
 
-def creer_commande(conn, id_utilisateur, lignes):
-    """lignes : liste de (id_plat, quantite, prix_unitaire). Retourne l'id de la commande."""
-    total = sum(quantite * prix for _, quantite, prix in lignes)
+def creer_commande(conn, id_utilisateur, lignes, id_reservation):
+    total = 0
+    for id_plat, quantite, prix in lignes:
+        total += quantite * prix
     with conn.get_curseur() as curseur:
         curseur.execute(
-            "INSERT INTO commandes (id_utilisateur, total) VALUES (%s, %s)",
-            (id_utilisateur, total)
+            "INSERT INTO commandes (id_utilisateur, total, id_reservation) VALUES (%s, %s, %s)",
+            (id_utilisateur, total, id_reservation)
         )
         id_commande = curseur.lastrowid
         for id_plat, quantite, prix in lignes:
@@ -129,7 +130,6 @@ def creer_commande(conn, id_utilisateur, lignes):
                 (id_commande, id_plat, quantite, prix)
             )
     return id_commande
-
 
 def obtenir_commande(conn, id_commande, id_utilisateur):
     """Retourne la commande avec ses lignes, seulement si elle appartient à cet utilisateur"""
@@ -208,9 +208,7 @@ def basculer_disponibilite_plat(conn, id_plat):
         )
 def annuler_reservation(conn, id_reservation, id_utilisateur):
     with conn.get_curseur() as curseur:
-        curseur.execute(
-            """DELETE FROM reservations
-               WHERE id = %s AND utilisateur_id = %s""",
+        curseur.execute( "DELETE FROM reservations WHERE id = %s AND utilisateur_id = %s",
             (id_reservation, id_utilisateur),
         )
         return curseur.rowcount > 0
@@ -222,8 +220,6 @@ def supprimer_reservations_passees(conn):
                WHERE date_depart < CURDATE()"""
         )
         return curseur.rowcount
-
-
 
 def obtenir_chambre(conn, id_chambre):
     with conn.get_curseur() as curseur:
@@ -378,3 +374,14 @@ def modifier_chambre_reservation(conn, id_reservation, id_chambre):
     with conn.get_curseur() as curseur:
         curseur.execute( "UPDATE reservations SET chambre_id = %s WHERE id = %s", (id_chambre, id_reservation)
         )
+
+def obtenir_repas_utilisateur(conn, id_utilisateur):
+    with conn.get_curseur() as curseur:
+        curseur.execute( """SELECT commandes.id AS id_commande, commandes.id_reservation,
+          commandes.date_commande, commandes.statut, plats.nom, commande_plats.quantite, 
+          commande_plats.prix_unitaire FROM commandes JOIN commande_plats ON commande_plats.id_commande = commandes.id
+          JOIN plats ON plats.id = commande_plats.id_plat WHERE commandes.id_utilisateur = %s
+               ORDER BY commandes.date_commande DESC""",
+            (id_utilisateur,)
+        )
+        return curseur.fetchall()

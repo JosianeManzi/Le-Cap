@@ -46,17 +46,28 @@ def page_panier():
     panier = session.get("panier", {})
     lignes = []
     total = 0
+    reservations = []
 
     if panier:
+        ids_plats = []
+        for cle in panier:
+            ids_plats.append(int(cle))
+
         with bd.creer_connexion() as conn:
-            plats = bd.obtenir_plats_par_ids(conn, [int(i) for i in panier])
+            plats = bd.obtenir_plats_par_ids(conn, ids_plats)
+
         for plat in plats:
             quantite = panier[str(plat["id"])]
             sous_total = plat["prix"] * quantite
             total += sous_total
             lignes.append({"plat": plat, "quantite": quantite, "sous_total": sous_total})
 
-    return render_template("restauration/panier.jinja", lignes=lignes, total=total)
+    id_utilisateur = session.get("id_utilisateur")
+    if id_utilisateur:
+        with bd.creer_connexion() as conn:
+            reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
+
+    return render_template("restauration/panier.jinja", lignes=lignes, total=total, reservations=reservations)
 
 
 @bp_restauration.route("/panier/ajouter/<int:id_plat>", methods=["POST"])
@@ -100,19 +111,44 @@ def commander():
     if not panier:
         return redirect(url_for("restauration.page_panier"))
 
+    ids_plats = []
+    for cle in panier:
+        ids_plats.append(int(cle))
+
     with bd.creer_connexion() as conn:
-        plats = bd.obtenir_plats_par_ids(conn, [int(i) for i in panier])
-        lignes = [(p["id"], panier[str(p["id"])], p["prix"]) for p in plats]
+        reservations = bd.obtenir_reservations_utilisateur(conn, id_utilisateur)
+
+        if not reservations:
+            flash("Vous devez avoir une réservation pour commander des repas.", "danger")
+            return redirect(url_for("restauration.page_panier"))
+
+        id_reservation = None
+        if len(reservations) == 1:
+            id_reservation = reservations[0]["id"]
+        else:
+            id_choisi = request.form.get("id_reservation", type=int)
+            for reservation in reservations:
+                if reservation["id"] == id_choisi:
+                    id_reservation = id_choisi
+
+        if id_reservation is None:
+            flash("Choisissez la réservation pour cette commande.", "danger")
+            return redirect(url_for("restauration.page_panier"))
+
+        plats = bd.obtenir_plats_par_ids(conn, ids_plats)
+        lignes = []
+        for plat in plats:
+            quantite = panier[str(plat["id"])]
+            lignes.append((plat["id"], quantite, plat["prix"]))
 
         if not lignes:
             session.pop("panier", None)
             return redirect(url_for("restauration.page_panier"))
 
-        id_commande = bd.creer_commande(conn, id_utilisateur, lignes)
+        id_commande = bd.creer_commande(conn, id_utilisateur, lignes, id_reservation)
 
     session.pop("panier", None)
     return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
-
 
 @bp_restauration.route("/commande/<int:id_commande>", methods=["GET"])
 def page_confirmation(id_commande):
@@ -148,54 +184,6 @@ def valider_carte(nom, numero, expiration, cvv):
     if not (cvv.isdigit() and len(cvv) == 3):
         return "Le code CVV doit contenir 3 chiffres."
     return None
-
-
-@bp_restauration.route("/commande/<int:id_commande>/paiement", methods=["GET"])
-def page_paiement(id_commande):
-    id_utilisateur = session.get("id_utilisateur")
-    if not id_utilisateur:
-        return redirect(url_for("compte.page_connexion"))
-
-    with bd.creer_connexion() as conn:
-        commande = bd.obtenir_commande(conn, id_commande, id_utilisateur)
-
-    if not commande:
-        abort(404)
-    if commande["statut"] == "payee":
-        return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
-
-    return render_template("restauration/paiement.jinja", commande=commande, erreur=None, nom_carte="")
-
-
-@bp_restauration.route("/commande/<int:id_commande>/payer", methods=["POST"])
-def payer(id_commande):
-    id_utilisateur = session.get("id_utilisateur")
-    if not id_utilisateur:
-        return redirect(url_for("compte.page_connexion"))
-
-    with bd.creer_connexion() as conn:
-        commande = bd.obtenir_commande(conn, id_commande, id_utilisateur)
-
-    if not commande:
-        abort(404)
-    if commande["statut"] == "payee":
-        return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
-
-    nom_carte = request.form.get("nom_carte", "").strip()
-    numero = request.form.get("numero_carte", "").replace(" ", "")
-    expiration = request.form.get("expiration", "").strip()
-    cvv = request.form.get("cvv", "").strip()
-
-    erreur = valider_carte(nom_carte, numero, expiration, cvv)
-    if erreur:
-        return render_template("restauration/paiement.jinja",
-                               commande=commande, erreur=erreur, nom_carte=nom_carte)
-
-    with bd.creer_connexion() as conn:
-        bd.payer_commande(conn, id_commande, id_utilisateur)
-
-    return redirect(url_for("restauration.page_confirmation", id_commande=id_commande))
-
 
 
 def enregistrer_image(fichier):
@@ -298,9 +286,6 @@ def page_modifier_plat(id_plat):
 
 
 @bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["POST"])
-@bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["POST"])
-
-
 def modifier_plat_menu(id_plat):
     admin_requis()
     nom = request.form.get("nom", "").strip()
