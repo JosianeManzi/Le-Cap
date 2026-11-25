@@ -12,8 +12,9 @@
             </h2>
             <p class="text-white-50 mb-0">Gérez vos informations et vos réservations.</p>
         </div>
-        <a href="{{ url_for('compte.deconnexion') }}" class="btn btn-primary rounded-pill px-4">
-            Déconnexion
+        <a href="{{ url_for('compte.deconnexion') }}" class="btn btn-primary rounded-pill">
+            <i class="fa-solid fa-right-from-bracket me-2"></i>
+            Se déconnecter
         </a>
     </div>
 
@@ -31,27 +32,51 @@
 
         <div class="col-lg-4">
             <div class="card bg-dark text-white border-info border-opacity-25 rounded-4 shadow h-100">
+
+                <div class="card-header bg-dark text-info border-info border-opacity-25 p-3 rounded-top-4">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fa-solid fa-id-card me-2"></i>
+                        Mes informations
+                    </h5>
+                </div>
+
                 <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="bg-info bg-opacity-10 text-info rounded-3 p-3">
-                            <i class="fa-solid fa-user fa-lg"></i>
+
+                    <div class="text-center mb-4">
+                        <div
+                            class="bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center p-4">
+                            <i class="fa-solid fa-user fa-2x"></i>
                         </div>
-                        <h5 class="text-info fw-bold mb-0">Informations</h5>
+
+                        <h4 class="fw-bold mt-3 mb-1">
+                            {{ utilisateur.prenom }} {{ utilisateur.nom }}
+                        </h4>
                     </div>
+
+                    <hr class="border-info border-opacity-25">
+
+                    <div class="mb-3">
+                        <small class="text-white-50 fw-bold">NOM</small>
+                        <p class="fw-semibold mb-0 mt-1">
+                            <i class="fa-solid fa-user text-info me-2"></i>
+                            {{ utilisateur.nom }}
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-white-50 fw-bold">PRÉNOM</small>
+                        <p class="fw-semibold mb-0 mt-1">
+                            <i class="fa-solid fa-user text-info me-2"></i>
+                            {{ utilisateur.prenom }}
+                        </p>
+                    </div>
+
                     <div class="mb-4">
-                        <small class="text-white-50">Nom</small>
-                        <div class="fw-semibold mt-1">{{ utilisateur.nom }}</div>
-                    </div>
-                    <div class="mb-4">
-                        <small class="text-white-50">Prénom</small>
-                        <div class="fw-semibold mt-1">{{ utilisateur.prenom }}</div>
-                    </div>
-                    <div>
-                        <small class="text-white-50">Courriel</small>
-                        <div class="fw-semibold mt-1 text-break">
+                        <small class="text-white-50 fw-bold">COURRIEL</small>
+                        <p class="fw-semibold mb-0 mt-1 text-break">
                             <i class="fa-regular fa-envelope text-info me-2"></i>
                             {{ utilisateur.email }}
-                        </div>
+                        </p>
                     </div>
                 </div>
             </div>
