@@ -22,5 +22,9 @@ app.register_blueprint(bp_reservations, url_prefix="/reservations")
 def accueil():
     return render_template("index.jinja")
 
+@app.route("/nous-joindre")
+def nous_joindre():
+    return render_template("nous_joindre.jinja")
+
 if __name__ == "__main__":
     app.run(debug=True)

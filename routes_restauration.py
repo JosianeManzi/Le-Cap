@@ -107,6 +107,11 @@ def commander():
     if not id_utilisateur:
         return redirect(url_for("compte.page_connexion"))
 
+    if session.get("est_admin"):
+        flash("Un administrateur ne peut pas commander.", "danger")
+        return redirect(url_for("restauration.page_panier"))
+
+
     panier = session.get("panier", {})
     if not panier:
         return redirect(url_for("restauration.page_panier"))

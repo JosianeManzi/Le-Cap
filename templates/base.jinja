@@ -30,7 +30,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="#"> Nous joindre</a>
+                        <a class="nav-link text-dark" href="{{ url_for('nous_joindre') }}"> Nous joindre</a>
                     </li>
                     {% if session.get('id_utilisateur') %}
                     <li class="nav-item">

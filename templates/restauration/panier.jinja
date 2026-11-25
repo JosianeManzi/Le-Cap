@@ -69,7 +69,7 @@
             {% endif %}
             <form method="post" action="{{ url_for('restauration.commander') }}" class="mt-4" novalidate>
                 {% if session.get('id_utilisateur') and not reservations %}
-                <div class="alert alert-warning">
+                <div class="alert text-danger m-3">
                     Vous devez avoir une réservation pour commander des repas.
                 </div>
                 {% elif reservations|length > 1 %}

@@ -54,6 +54,9 @@ def reservations():
             clients=clients, type_chambre=type_chambre)
         flash("Connectez-vous pour réserver.", "erreur")
         return redirect(url_for("compte.page_connexion"))
+
+    if session.get("est_admin"):
+        flash("Un administrateur ne peut pas faire de réservation.", "danger")
     try:
         with bd.creer_connexion() as conn:
             bd.ajouter_reservation(conn, session["id_utilisateur"], id_chambre, arrivee, depart)
