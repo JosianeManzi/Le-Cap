@@ -3,7 +3,9 @@ import bd
 import os
 from werkzeug.utils import secure_filename
 import uuid
+import re
 
+REGEX_INTERDIT = re.compile(r"[<>]")
 TYPES_CHAMBRE = ("Standard", "Suite", "Luxueux")
 EXTENSIONS_IMAGE = {"jpg", "jpeg", "png", "webp", "gif"}
 
@@ -102,19 +104,26 @@ def page_modifier_chambre(id_chambre):
     return render_template("chambres/modifier.jinja", chambre=chambre, types=TYPES_CHAMBRE)
 
 
+
 @bp_chambres.route("/modifier/<int:id_chambre>", methods=["POST"])
 def modifier_chambre_admin(id_chambre):
     admin_requis()
+
     with bd.creer_connexion() as conn:
         if bd.chambre_est_reservee(conn, id_chambre):
             flash("Cette chambre a déjà été réservée, elle ne peut plus être modifiée.", "danger")
             return redirect(url_for("chambres.page_admin_chambres"))
-    type_chambre = request.form.get("type_chambre", "")
+
+    type_chambre = request.form.get("type_chambre", "").strip()
     description = request.form.get("description", "").strip()
     prix_nuit = request.form.get("prix_nuit", type=float)
     nb_personnes = request.form.get("nb_personnes", type=int)
     disponible = 1 if request.form.get("disponible") else 0
     image = request.files.get("image")
+
+    if REGEX_INTERDIT.search(type_chambre) or REGEX_INTERDIT.search(description):
+        flash("Les caractères < et > sont interdits.", "danger")
+        return redirect(url_for("chambres.page_modifier_chambre", id_chambre=id_chambre))
 
     if (type_chambre not in TYPES_CHAMBRE or not description
             or prix_nuit is None or prix_nuit <= 0
@@ -123,11 +132,14 @@ def modifier_chambre_admin(id_chambre):
         return redirect(url_for("chambres.page_modifier_chambre", id_chambre=id_chambre))
 
     nom_image = None
+
     if image and image.filename:
         extension = image.filename.rsplit(".", 1)[-1].lower()
+
         if extension not in EXTENSIONS_IMAGE:
             flash("Format d'image non accepté.", "danger")
             return redirect(url_for("chambres.page_modifier_chambre", id_chambre=id_chambre))
+
         nom_image = f"{uuid.uuid4().hex[:8]}_{secure_filename(image.filename)}"
         image.save(os.path.join("static", "img", nom_image))
 
@@ -139,8 +151,6 @@ def modifier_chambre_admin(id_chambre):
     return redirect(url_for("chambres.page_admin_chambres"))
 
 
-
-@bp_chambres.route("/basculer/<int:id_chambre>", methods=["POST"])
 @bp_chambres.route("/basculer/<int:id_chambre>", methods=["POST"])
 def basculer_chambre_admin(id_chambre):
     admin_requis()

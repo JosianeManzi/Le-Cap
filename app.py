@@ -12,7 +12,8 @@ if not os.getenv("DB_USER"):
     load_dotenv(".env")
 
 app = Flask(__name__)
-app.secret_key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+app.jinja_env.autoescape = True
+app.secret_key = os.getenv("SECRET_KEY")
 app.register_blueprint(bp_compte, url_prefix="/compte")
 app.register_blueprint(bp_chambres, url_prefix="/chambres")
 app.register_blueprint(bp_restauration, url_prefix="/restauration")

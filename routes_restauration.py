@@ -5,6 +5,9 @@ from werkzeug.utils import secure_filename
 import uuid
 import os
 from werkzeug.utils import secure_filename
+import re
+
+REGEX_INTERDIT = re.compile(r"[<>]")
 EXTENSIONS_IMAGE = {"png", "jpg", "jpeg", "webp"}
 bp_restauration = Blueprint("restauration", __name__)
 
@@ -218,14 +221,20 @@ def page_admin_menu():
     for plat in plats:
         plats_par_categorie[plat["categorie"]].append(plat)
 
-    return render_template("restauration/admin_menu.jinja",categories=CATEGORIES, plats_par_categorie=plats_par_categorie,
-    nom=session.pop("nom", ""),prix=session.pop("prix", ""), categorie=session.pop("categorie", ""),
-    description=session.pop("description", ""))
+    return render_template("restauration/admin_menu.jinja",
+                        categories=CATEGORIES,
+                        plats_par_categorie=plats_par_categorie,
+                        nom=session.pop("plat_nom", ""),
+                        prix=session.pop("plat_prix", ""),
+                        categorie=session.pop("plat_categorie", ""),
+                        description=session.pop("plat_description", ""))
 
 
 @bp_restauration.route("/admin/ajouter", methods=["POST"])
 
 
+
+@bp_restauration.route("/admin/ajouter", methods=["POST"])
 def ajouter_plat_menu():
     admin_requis()
     nom = request.form.get("nom", "").strip()
@@ -240,6 +249,8 @@ def ajouter_plat_menu():
 
     if not nom or not description:
         flash("Le nom et la description sont obligatoires.", "danger")
+    elif REGEX_INTERDIT.search(nom) or REGEX_INTERDIT.search(description):
+        flash("Les caractères < et > sont interdits.", "danger")
     elif len(nom) > 100:
         flash("Le nom ne peut pas dépasser 100 caractères.", "danger")
     elif categorie not in [cle for cle, _, _ in CATEGORIES]:
@@ -257,14 +268,17 @@ def ajouter_plat_menu():
 
         with bd.creer_connexion() as conn:
             bd.ajouter_plat(conn, nom, description, prix, categorie, nom_image)
+
         flash(f"« {nom} » a été ajouté au menu.", "success")
         return redirect(url_for("restauration.page_admin_menu"))
 
-    session["nom"] = nom
-    session["prix"] = request.form.get("prix", "")
-    session["categorie"] = categorie
-    session["description"] = description
+    session["plat_nom"] = nom
+    session["plat_prix"] = request.form.get("prix", "")
+    session["plat_categorie"] = categorie
+    session["plat_description"] = description
+
     return redirect(url_for("restauration.page_admin_menu"))
+
 
 
 @bp_restauration.route("/admin/basculer/<int:id_plat>", methods=["POST"])
@@ -290,6 +304,7 @@ def page_modifier_plat(id_plat):
                            plat=plat, categories=CATEGORIES)
 
 
+
 @bp_restauration.route("/admin/modifier/<int:id_plat>", methods=["POST"])
 def modifier_plat_menu(id_plat):
     admin_requis()
@@ -304,8 +319,11 @@ def modifier_plat_menu(id_plat):
         prix = 0
 
     erreur = None
+
     if not nom or not description:
         erreur = "Le nom et la description sont obligatoires."
+    elif REGEX_INTERDIT.search(nom) or REGEX_INTERDIT.search(description):
+        erreur = "Les caractères < et > sont interdits."
     elif len(nom) > 100:
         erreur = "Le nom ne peut pas dépasser 100 caractères."
     elif categorie not in [cle for cle, _, _ in CATEGORIES]:
@@ -314,6 +332,7 @@ def modifier_plat_menu(id_plat):
         erreur = "Le prix doit être entre 0,01 $ et 500 $."
 
     nom_image = None
+
     if not erreur and image and image.filename:
         nom_image, erreur = enregistrer_image(image)
 
@@ -324,6 +343,7 @@ def modifier_plat_menu(id_plat):
     with bd.creer_connexion() as conn:
         if not bd.obtenir_plat(conn, id_plat):
             abort(404)
+
         bd.modifier_plat(conn, id_plat, nom, description, prix, categorie, nom_image)
 
     flash(f"« {nom} » a été modifié.", "success")
