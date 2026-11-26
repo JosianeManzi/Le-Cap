@@ -54,6 +54,12 @@ def reservations():
             clients=clients, type_chambre=type_chambre)
         flash("Connectez-vous pour réserver.", "erreur")
         return redirect(url_for("compte.page_connexion"))
+
+    if session.get("est_admin"):
+        flash("Un administrateur ne peut pas faire de réservation.", "danger")
+        return redirect(url_for("reservations.liste", arrivee=arrivee, depart=depart,
+                                clients=clients, type_chambre=type_chambre))
+
     try:
         with bd.creer_connexion() as conn:
             bd.ajouter_reservation(conn, session["id_utilisateur"], id_chambre, arrivee, depart)
@@ -77,6 +83,8 @@ def annuler(id_reservation):
 
 @bp_reservations.route("/admin/reservations", methods=["GET"])
 def liste_reservations():
+    if not session.get("est_admin"):
+        abort(403)
     with bd.creer_connexion() as conn:
         reservations = bd.liste_reservation(conn)
     somme = 0

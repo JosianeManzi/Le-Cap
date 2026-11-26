@@ -1,25 +1,24 @@
-html,
-body {
-    height: 100%;
+html, body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
 }
 
 body {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
 main {
-    flex: 1;
+    flex: 1 0 auto;
     padding: 40px 0;
 }
 
 footer {
+    flex-shrink: 0;
     width: 100%;
-    height: auto;
-}
-
-body {
-    padding-bottom: 160px;
+    margin-top: auto;
 }
 
 .shadow-dark {
@@ -112,4 +111,25 @@ body {
 
 .page-header {
     background: linear-gradient(135deg, #8a4403, #f0b026);
+}
+.lien-nav {
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.lien-nav:hover,
+.lien-nav.actif {
+    color: rgb(167, 148, 5);
+    border-bottom-color: rgb(167, 148, 5);
+}
+@media (max-width: 991.98px) {
+    .navbar .nav-link {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .navbar .btn {
+        margin-top: 1rem;
+        width: 100%;
+    }
 }

@@ -3,7 +3,6 @@ import contextlib
 import mysql.connector
 import os
 
-
 @contextlib.contextmanager
 def creer_connexion():
     """Créer une connexion à la BD"""

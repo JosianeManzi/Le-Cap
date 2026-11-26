@@ -1,5 +1,6 @@
 const regex_courriel = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const regex_mot_de_passe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{5,}$/;
+const regex_interdit = /[<>]/;
 
 
 function validerNom() {
@@ -9,6 +10,11 @@ function validerNom() {
 
     if (!nom) {
         msg.textContent = "Le nom ne peut pas être vide.";
+        return false;
+    }
+
+    if (regex_interdit.test(nom)) {
+        msg.textContent = "Les caractères < et > sont interdits.";
         return false;
     }
     return true;
@@ -24,6 +30,11 @@ function validerPrenom() {
         msg.textContent = "Le prénom ne peut pas être vide.";
         return false;
     }
+
+    if (regex_interdit.test(prenom)) {
+        msg.textContent = "Les caractères < et > sont interdits.";
+        return false;
+    }
     return true;
 }
 
@@ -35,6 +46,11 @@ function validerCourriel() {
 
     if (!courriel) {
         msg.textContent = "Le courriel ne peut pas être vide.";
+        return false;
+    }
+
+    if (regex_interdit.test(courriel)) {
+        msg.textContent = "Les caractères < et > sont interdits.";
         return false;
     }
 

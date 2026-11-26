@@ -11,40 +11,48 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg bg-white py-3">
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg bg-white py-3 shadow-sm sticky-top">
         <div class="container px-4">
-            <a class="navbar-brand  fs-2 fw-normal text-dark" href="#"> Le-Cap </a>
+            <a class="navbar-brand fs-2 fw-semibold text-dark" href="{{ url_for('accueil') }}">Le-Cap</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Ouvrir le menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto gap-lg-5">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('accueil') }}"> Accueil</a>
+                        <a class="nav-link text-dark lien-nav {% if request.path == '/' %}actif{% endif %}"
+                            href="{{ url_for('accueil') }}">Accueil</a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('chambres.page_liste_chambres') }}">Chambres</a>
+                        <a class="nav-link text-dark lien-nav {% if request.path.startswith('/chambres') or request.path.startswith('/reservations') %}actif{% endif %}"
+                            href="{{ url_for('chambres.page_liste_chambres') }}">Chambres</a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="/restauration/">Restauration</a>
+                        <a class="nav-link text-dark lien-nav {% if request.path.startswith('/restauration') %}actif{% endif %}"
+                            href="/restauration/">Restauration</a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="#"> Nous joindre</a>
+                        <a class="nav-link text-dark lien-nav {% if request.path.startswith('/nous-joindre') %}actif{% endif %}"
+                            href="{{ url_for('nous_joindre') }}">Nous joindre</a>
                     </li>
                     {% if session.get('id_utilisateur') %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('compte.page_utilisateur') }}"> Compte</a>
+                        <a class="nav-link text-dark lien-nav {% if request.path.startswith('/compte') %}actif{% endif %}"
+                            href="{{ url_for('compte.page_utilisateur') }}">Compte</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('compte.page_connexion') }}"> Connexion</a>
+                        <a class="nav-link text-dark lien-nav {% if request.path.startswith('/compte') %}actif{% endif %}"
+                            href="{{ url_for('compte.page_connexion') }}">Connexion</a>
                     </li>
                     {% endif %}
                 </ul>
 
-                <a href="{{ url_for('reservations.reserver') }}" class="btn btn-dark rounded-0 px-4 py-3">Réserver
-                    maintenant </a>
+                <a href="{{ url_for('reservations.reserver') }}"
+                    class="btn btn-dark rounded-pill px-4 py-2 fw-semibold">Réserver maintenant</a>
             </div>
         </div>
     </nav>
@@ -55,25 +63,30 @@
     </main>
 
     <footer class="bg-white border-top mt-auto">
-        <div class="container py-2">
-            <div class="row align-items-center">
+        <div class="container py-4 px-4">
+            <div class="row align-items-center gy-3">
 
-                <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
-                    <h5 class="fw-normal mb-3">CONTACT</h5>
-                    <p class="mb-1">Téléphone : 418-000-0000</p>
-                    <p class="mb-0">courriel@le-cap.ca</p>
+                <div class="col-md-4 text-center text-md-start">
+                    <div class="fs-4 fw-semibold">Le-Cap</div>
+                    <small class="text-muted">Hôtel et restaurant</small>
                 </div>
 
-                <div class="col-md-6 text-center text-md-end">
-                    <h5 class="fw-normal mb-3">ADRESSE</h5>
-                    <p class="mb-1">123 Rue du Cap</p>
-                    <p class="mb-0">Québec, QC</p>
+                <div class="col-md-4 text-center">
+                    <h6 class="text-uppercase fw-bold mb-2">Contact</h6>
+                    <p class="mb-0 text-muted">418-000-0000</p>
+                    <p class="mb-0 text-muted">courriel@le-cap.ca</p>
+                </div>
+
+                <div class="col-md-4 text-center text-md-end">
+                    <h6 class="text-uppercase fw-bold mb-2">Adresse</h6>
+                    <p class="mb-0 text-muted">123 Rue du Cap</p>
+                    <p class="mb-0 text-muted">Québec, QC</p>
                 </div>
 
             </div>
         </div>
     </footer>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block scripts %}{% endblock %}
 
 </body>
