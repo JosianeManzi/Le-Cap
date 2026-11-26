@@ -2,7 +2,6 @@ import types
 import contextlib
 import mysql.connector
 import os
-import re
 
 @contextlib.contextmanager
 def creer_connexion():
